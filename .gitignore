@@ -376,23 +376,28 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# VS Code files for those working on multiple tools
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+# Crash dumps
+*.dmp
 
-# Local History for Visual Studio Code
-.history/
+# IDEs cache folder
+.ide/
+.idea/
+.vscode/
+.DS_Store
 
-# Windows Installer files from build outputs
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
+# React-specific
+node_modules/
+build/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# JetBrains Rider
-*.sln.iml
+# React environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ASP.NET Core-specific
+appsettings.*.json
