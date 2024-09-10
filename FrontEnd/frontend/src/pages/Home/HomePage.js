@@ -1,7 +1,7 @@
 // src/pages/HomePage.js
 import React from 'react';
-import MainLayout from '../layouts/MainLayout';
-import ProductList from '../components/ProductList';
+import MainLayout from '../../layouts/MainLayout';
+import ProductList from '../../components/ProductList';
 
 const HomePage = () => {
   // Dữ liệu mẫu sản phẩm
