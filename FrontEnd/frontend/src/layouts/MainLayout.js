@@ -11,7 +11,7 @@ function MainLayout({ children }) {
             <SearchBar />
             <SubHeader />
             </div>
-            {/* <main>{children}</main> */}
+            <main>{children}</main>
             <Footer />
         </div>
     );
