@@ -42,7 +42,7 @@ function Header() {
                                     </Link>
                                 </li>
                                 <li className='text-[11px] py-2 px-4 w-full hover:underline text-blue-500 hover:text-blue-600 cursor-pointer'>
-                                    <Link to='/signout'>
+                                    <Link to='/pages/Authentication/Register'>
                                         Sign Out
                                     </Link>
                                 </li>
