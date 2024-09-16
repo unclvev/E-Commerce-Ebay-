@@ -1,18 +1,140 @@
 import { Button, Card, Input, Select } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const { Option } = Select;
 
+const BusinessForm = ({ formData, handleInputChange, handleInputBlur, handleSelectBlur, errors, touched }) => (
+  <>
+    <div>
+      <Input
+        type="text"
+        name="businessName"
+        placeholder="Business name"
+        value={formData.businessName}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.businessName && errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
+    </div>
+    <div>
+      <Input
+        type="email"
+        name="businessEmail"
+        placeholder="Business email"
+        value={formData.businessEmail}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.businessEmail && errors.businessEmail && <p className="text-red-500 text-xs mt-1">{errors.businessEmail}</p>}
+    </div>
+    <div>
+      <Input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.password && errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+    </div>
+    <div>
+      <Select
+        placeholder="Where is your business registered?"
+        onChange={(value) => handleInputChange({ target: { name: 'businessLocation', value } })}
+        value={formData.businessLocation}
+        style={{ width: '100%' }}
+        onBlur={handleSelectBlur}
+      >
+        <Option value="us">United States</Option>
+        <Option value="uk">United Kingdom</Option>
+        <Option value="ca">Canada</Option>
+        {/* Thêm các quốc gia khác ở đây */}
+      </Select>
+      {touched.businessLocation && errors.businessLocation && <p className="text-red-500 text-xs mt-1">{errors.businessLocation}</p>}
+    </div>
+  </>
+);
+
+const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, touched }) => (
+  <>
+    <div>
+      <Input
+        type="text"
+        name="userName"
+        placeholder="Username"
+        value={formData.userName}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.userName && errors.userName && <p className="text-red-500 text-xs mt-1">{errors.userName}</p>}
+    </div>
+    <div>
+      <Input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.password && errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+    </div>
+    <div>
+      <Input
+        type="password"
+        name="rePassword"
+        placeholder="Re-enter Password"
+        value={formData.rePassword}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.rePassword && errors.rePassword && <p className="text-red-500 text-xs mt-1">{errors.rePassword}</p>}
+    </div>
+
+  </>
+);
+
 const RegistrationForm = () => {
-  const [formType, setFormType] = useState('business'); // State để theo dõi loại form hiện tại
+  const [formType, setFormType] = useState('personal'); // Hiển thị form Personal đầu tiên
   const [formData, setFormData] = useState({
     businessName: '',
     businessEmail: '',
     password: '',
     businessLocation: '',
     userName: '',
-    rePassword: '' // Thêm trường này cho form Personal
+    rePassword: ''
   });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    validateForm();
+  }, [formData, formType]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (formType === 'business') {
+      if (!formData.businessName) newErrors.businessName = 'Business name is required';
+      if (!formData.businessEmail) newErrors.businessEmail = 'Business email is required';
+      if (!formData.password) newErrors.password = 'Password is required';
+      if (!formData.businessLocation) newErrors.businessLocation = 'Business location is required';
+    } else {
+      if (!formData.userName) newErrors.userName = 'Username is required';
+      if (!formData.password) newErrors.password = 'Password is required';
+      if (!formData.rePassword) newErrors.rePassword = 'Re-enter Password is required';
+      if (formData.password !== formData.rePassword) newErrors.rePassword = 'Passwords do not match';
+    }
+    setErrors(newErrors);
+    setIsFormValid(Object.keys(newErrors).length === 0);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,32 +144,43 @@ const RegistrationForm = () => {
     }));
   };
 
+  const handleInputBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateForm();
+  };
+
+  const handleSelectBlur = () => {
+    setTouched(prev => ({ ...prev, businessLocation: true }));
+    handleInputBlur({ target: { name: 'businessLocation', value: formData.businessLocation } });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Xử lý gửi dữ liệu đăng ký ở đây
+    if (isFormValid) {
+      console.log('Form submitted:', formData);
+      // Xử lý gửi dữ liệu đăng ký ở đây
+    }
   };
 
   return (
     <div className="flex h-screen">
       {/* Image Section */}
-      {/* Image Section */}
-      <div 
-  className="flex-1 bg-cover bg-center bg-no-repeat border-r-4 border-gray-300 flex items-center justify-center"
-  style={{ 
-    width: '50%',  // Chiều rộng của ảnh
-    height: '80vh', // Chiều cao của ảnh
-    backgroundImage: 'url(https://ir.ebaystatic.com/cr/v/c01/buyer_dweb_business.jpg)',
-    backgroundSize: 'cover', // Đảm bảo ảnh vừa khít với phần tử
-    backgroundPosition: 'center', // Căn giữa ảnh
-    borderRadius: '0 10px 10px 0', // Bo góc bên phải
-    overflow: 'hidden', // Ẩn phần ảnh vượt ra ngoài bo góc
-    margin: 'auto' // Căn giữa phần tử trong flex container
-  }}
->
-  {/* Nội dung khác (nếu cần) */}
-</div>
-
+      <div
+        className="flex-1 bg-cover bg-center bg-no-repeat border-r-4 border-gray-300 flex items-center justify-center"
+        style={{
+          width: '50%',
+          height: '80vh',
+          backgroundImage: 'url(https://ir.ebaystatic.com/cr/v/c01/buyer_dweb_business.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          borderRadius: '0 10px 10px 0',
+          overflow: 'hidden',
+          margin: 'auto'
+        }}
+      >
+        {/* Nội dung khác (nếu cần) */}
+      </div>
 
       {/* Form Login Section */}
       <div className="flex-1 flex items-center justify-center bg-gray-100">
@@ -68,89 +201,53 @@ const RegistrationForm = () => {
           </div>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {formType === 'business' ? (
-              <>
-                <div>
-                  <Input
-                    type="text"
-                    name="businessName"
-                    placeholder="Business name"
-                    value={formData.businessName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="email"
-                    name="businessEmail"
-                    placeholder="Business email"
-                    value={formData.businessEmail}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Select
-                    placeholder="Where is your business registered?"
-                    onChange={(value) => setFormData(prev => ({ ...prev, businessLocation: value }))}
-                    value={formData.businessLocation}
-                    style={{ width: '100%' }}
-                  >
-                    <Option value="us">United States</Option>
-                    <Option value="uk">United Kingdom</Option>
-                    <Option value="ca">Canada</Option>
-                    {/* Thêm các quốc gia khác ở đây */}
-                  </Select>
-                </div>
-              </>
+              <BusinessForm
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleInputBlur={handleInputBlur}
+                handleSelectBlur={handleSelectBlur}
+                errors={errors}
+                touched={touched}
+              />
             ) : (
-              <>
-                <div>
-                  <Input
-                    type="text"
-                    name="userName"
-                    placeholder="Username"
-                    value={formData.userName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    name="rePassword"
-                    placeholder="Re-enter Password"
-                    value={formData.rePassword}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </>
+              <PersonalForm
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleInputBlur={handleInputBlur}
+                errors={errors}
+                touched={touched}
+              />
             )}
-            <div className="text-sm mt-2">
-              By selecting Create account, you agree to our <a href="/" className="text-blue-600">User Agreement</a> and acknowledge reading our <a href="#" className="text-blue-600">User Privacy Notice</a>.
+            <div className="text-gray-500 text-xs mt-4">
+              By signing up, you agree to our <a href="/" className="text-black">User Agreement</a> and acknowledge reading our <a href="/" className="text-black">User Privacy Notice</a>.
             </div>
-            <Button type="primary" htmlType="submit" className="w-full mt-4">Create account</Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className={`w-full mt-4 ${isFormValid ? '' : 'bg-gray-400'}`}
+              disabled={!isFormValid}
+            >
+              Create account
+            </Button>
+            {formType === 'personal' && (
+              <div className="text-center my-4">
+                <div className="flex items-center justify-center">
+                  <div className="flex-grow border-t border-gray-300" />
+                  <span className="mx-4 text-gray-500">or</span>
+                  <div className="flex-grow border-t border-gray-300" />
+                </div>
+                <div className="flex flex-col items-center space-y-4 mt-4">
+                  <div className="flex space-x-4 w-full">
+                    <Button className="flex-1" type="default" style={{ borderColor: '#4285F4', color: '#4285F4' }}>
+                      <i className="fab fa-google mr-2"></i> Google
+                    </Button>
+                    <Button className="flex-1" type="default" style={{ borderColor: '#1877F2', color: '#1877F2' }}>
+                      <i className="fab fa-facebook-f mr-2"></i> Facebook
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </form>
         </Card>
       </div>
