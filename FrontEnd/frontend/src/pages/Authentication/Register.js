@@ -1,5 +1,7 @@
 import { Button, Card, Input, Select } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom'; // Import Link từ react-router-dom
 
 const { Option } = Select;
 
@@ -164,7 +166,14 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="relative h-screen flex">
+      {/* Logo Section */}
+      <div className="absolute top-4 left-4">
+        <Link to="/">
+          <img width="120" src="/images/logo.svg" alt="Logo" />
+        </Link>
+      </div>
+
       {/* Image Section */}
       <div
         className="flex-1 bg-cover bg-center bg-no-repeat border-r-4 border-gray-300 flex items-center justify-center"
@@ -238,11 +247,21 @@ const RegistrationForm = () => {
                 </div>
                 <div className="flex flex-col items-center space-y-4 mt-4">
                   <div className="flex space-x-4 w-full">
-                    <Button className="flex-1" type="default" style={{ borderColor: '#4285F4', color: '#4285F4' }}>
-                      <i className="fab fa-google mr-2"></i> Google
+                    <Button
+                      className="flex-1"
+                      type="default"
+                      style={{ borderColor: '#ed1f0c', color: '#ed1f0c' }}
+                      icon={<GoogleOutlined />} // Sử dụng biểu tượng Ant Design
+                    >
+                      Google
                     </Button>
-                    <Button className="flex-1" type="default" style={{ borderColor: '#1877F2', color: '#1877F2' }}>
-                      <i className="fab fa-facebook-f mr-2"></i> Facebook
+                    <Button
+                      className="flex-1"
+                      type="default"
+                      style={{ borderColor: '#4285F4', color: '#4285F4' }}
+                      icon={<FacebookOutlined />} // Sử dụng biểu tượng Ant Design
+                    >
+                      Facebook
                     </Button>
                   </div>
                 </div>

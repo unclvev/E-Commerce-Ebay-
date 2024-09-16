@@ -4,7 +4,7 @@ import CartPage from './pages/Cart/CartPage';
 import CheckoutPage from './pages/CheckOut/CheckoutPage';
 import HomePage from './pages/Home/HomePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
-import RegistrationForm from './pages/Authentication/register';
+import RegistrationForm from './pages/Authentication/Register';
 function App() {
   return (
     <BrowserRouter>
