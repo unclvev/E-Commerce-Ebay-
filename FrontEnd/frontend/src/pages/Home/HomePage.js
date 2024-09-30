@@ -1,18 +1,11 @@
 // src/pages/HomePage.js
 import React from 'react';
 import MainLayout from '../../layouts/MainLayout';
-// import ProductList from '../../components/ProductList';
 import Carousel from '../../pages/Home/Includes/Carousel'; // Nếu đã tạo component Carousel
 import TrendingCategories from '../../pages/Home/Includes/TrendingCategories'; // Nếu đã tạo component TrendingCategories
 
 const HomePage = () => {
-  // Dữ liệu sản phẩm mẫu
-  // const products = [
-  //   { id: 1, name: 'Product 1', price: 100, image: '/images/product1.jpg' },
-  //   { id: 2, name: 'Product 2', price: 150, image: '/images/product2.jpg' },
-  //   { id: 3, name: 'Product 3', price: 200, image: '/images/product3.jpg' },
-  //   { id: 4, name: 'Product 4', price: 250, image: '/images/product4.jpg' },
-  // ];
+
 
   // Dữ liệu cho carousel
   const slides = [
@@ -76,12 +69,6 @@ const HomePage = () => {
       <div className="mb-8">
         <Carousel slides={singleSlideBanner2} hideNavigation={true} />
       </div>
-
-      {/* Phần sản phẩm nổi bật
-      <div className="mt-8">
-        <h1 className="text-2xl font-bold mb-4">Featured Products</h1>
-        <ProductList products={products} />
-      </div> */}
     </MainLayout>
   );
 };
