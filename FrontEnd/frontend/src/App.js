@@ -6,6 +6,7 @@ import HomePage from './pages/Home/HomePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
 import RegistrationForm from './pages/Authentication/Register';
 import LoginPage from './pages/Authentication/login';
+import ProductDetailPage from './pages/ProductDetails/ProductDetailsPage';
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,9 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
         <Route path='/sign-up' element={<RegistrationForm />} />
         <Route path='/sign-in' element={<LoginPage />} />
+
+        <Route path='/product' element={<ProductDetailPage />} />
+        <Route path='/cart' element={<CartPage />} />
       </Routes>
     </BrowserRouter>
   );

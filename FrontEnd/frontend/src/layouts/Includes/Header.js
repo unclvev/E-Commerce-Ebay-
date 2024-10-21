@@ -57,6 +57,12 @@ function Header() {
                         <img width={32} src='/images/uk.png' alt="Ship To" />
                         Ship To
                     </li>
+                    <li className="flex items-center gap-2 px-3 hover:underline cursor-pointer">
+                        <a href='/watchlist'>
+                            Watchlist
+                        </a>
+
+                    </li>
                     <li className='px-3 hover:underline cursor-pointer'>
                         <div className='relative'>
                             <AiOutlineShoppingCart size={22} />
