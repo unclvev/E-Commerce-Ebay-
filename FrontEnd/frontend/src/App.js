@@ -12,6 +12,9 @@ import ManageProducts from './pages/Seller/ManageProduct';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
 import ProductDetailPage from './pages/ProductDetails/ProductDetailsPage';
+import ProfilePage from './pages/Profile/ProfilePage';  
+import ChangePasswordPage from '.pages/Profile/ChangePasswordPage';// Import ProfilePage
+
 function App() {
   return (
     <BrowserRouter>
@@ -20,17 +23,20 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/auth" element={<BusinessRegistrationForm></BusinessRegistrationForm>} />
+        <Route path="/auth" element={<BusinessRegistrationForm />} />
         <Route path='/sign-up' element={<RegistrationForm />} />
         <Route path='/sign-in' element={<LoginPage />} />
-        <Route path='/seller/dashboard' element={<SellerDashboard />}></Route>
-        <Route path='/seller/product' element={<ManageProducts />}></Route>
-        <Route path='/seller/order' element={<ManageOrder />}></Route>
-        <Route path='/seller/promotion' element={<Promotion />}></Route>
-        <Route path='/seller/store' element={<StoreManagement />}></Route>
-
+        <Route path='/seller/dashboard' element={<SellerDashboard />} />
+        <Route path='/seller/product' element={<ManageProducts />} />
+        <Route path='/seller/order' element={<ManageOrder />} />
+        <Route path='/seller/promotion' element={<Promotion />} />
+        <Route path='/seller/store' element={<StoreManagement />} />
         <Route path='/product' element={<ProductDetailPage />} />
-        <Route path='/cart' element={<CartPage />} />
+        
+        {/* Add the route for the ProfilePage */}
+        <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/change-password/:userId" element={<ChangePasswordPage />} />
+        
       </Routes>
     </BrowserRouter>
   );
