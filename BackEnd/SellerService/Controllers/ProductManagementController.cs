@@ -26,14 +26,16 @@ namespace SellerService.Controllers
         }
 
         // Get Seller Listing by ID
-        [HttpGet("listings/{id}")]
-        public async Task<ActionResult<SellerListingResponseDTO>> GetSellerListingById(string id)
+        [HttpGet("listing/{id}")]
+        public async Task<IActionResult> GetSellerListingById(string id)
         {
             var listing = await _sellerDAO.GetSellerListingByIdAsync(id);
+
             if (listing == null)
             {
-                return NotFound();
+                return NotFound($"Listing with ID: {id} not found");
             }
+
             return Ok(listing);
         }
 
@@ -67,6 +69,18 @@ namespace SellerService.Controllers
                 return NotFound();
             }
             return Ok(deletedListing);
+        }
+        [HttpGet("listings/{sellerId}")]
+        public async Task<IActionResult> GetListingsBySellerId(string sellerId)
+        {
+            var listings = await _sellerDAO.GetListingsBySellerIdAsync(sellerId);
+
+            if (listings == null || !listings.Any())
+            {
+                return NotFound($"No listings found for seller with ID: {sellerId}");
+            }
+
+            return Ok(listings);
         }
     }
 }

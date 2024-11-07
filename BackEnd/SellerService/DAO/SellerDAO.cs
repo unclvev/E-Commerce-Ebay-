@@ -5,6 +5,7 @@ namespace SellerService.DAO
 {
     public class SellerDAO
     {
+        //List
         private readonly SellerRepository _sellerRepository;
         public SellerDAO(SellerRepository sellerRepository)
         {
@@ -29,6 +30,36 @@ namespace SellerService.DAO
         public async Task<SellerListingResponseDTO?> DeleteSellerListingAsync(string id)
         {
             return await _sellerRepository.DeleteSellerListingAsync(id);
+        }
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerId)
+        {
+            return await _sellerRepository.GetListingsBySellerIdAsync(sellerId);
+        }
+
+        //ManageOrders
+        public async Task<List<OrderResponseDTO>> GetAllOrdersAsync()
+        {
+            return await _sellerRepository.GetAllOrdersAsync();
+        }
+
+        public async Task<OrderResponseDTO?> GetOrderByIdAsync(string id)
+        {
+            return await _sellerRepository.GetOrderByIdAsync(id);
+        }
+
+        public async Task<List<OrderItemResponseDTO>> GetOrderItemsByOrderIdAsync(string orderId)
+        {
+            return await _sellerRepository.GetOrderItemsByOrderIdAsync(orderId);
+        }
+
+        public async Task<OrderResponseDTO?> UpdateOrderAsync(string id, OrderResponseDTO orderUpdate)
+        {
+            return await _sellerRepository.UpdateOrderAsync(id, orderUpdate);
+        }
+
+        public async Task<bool?> DeleteOrderAsync(string id)
+        {
+            return await _sellerRepository.DeleteOrderAsync(id);
         }
     }
 }

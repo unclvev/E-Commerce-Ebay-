@@ -9,13 +9,14 @@ namespace SellerService.Repository
 {
     public class SellerRepository
     {
-        private readonly EbayContext _context;
+        private readonly EBayContext _context;
 
-        public SellerRepository(EbayContext context)
+        public SellerRepository(EBayContext context)
         {
             _context = context;
         }
 
+//ProductManagement
         // Get all Seller Listings
         public async Task<List<SellerListingResponseDTO>> GetAllSellerListingsAsync()
         {
@@ -143,5 +144,162 @@ namespace SellerService.Repository
             // Trả về DTO của Listing đã xóa
             return deletedListingDTO;
         }
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerId)
+        {
+            return await _context.Listings
+                .Where(l => l.SellerId == sellerId)
+                .Select(l => new SellerListingResponseDTO
+                {
+                    Id = l.Id,
+                    ProductId = l.ProductId,
+                    SellerId = l.SellerId,
+                    StartTime = l.StartTime,
+                    EndTime = l.EndTime,
+                    StartPrice = l.StartPrice,
+                    CurrentPrice = l.CurrentPrice,
+                    CategoryId = l.CategoryId
+                })
+                .ToListAsync();
+        }
+//OrderManagement
+        public async Task<List<OrderResponseDTO>> GetAllOrdersAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.User)
+                .Select(o => new OrderResponseDTO
+                {
+                    Id = o.Id,
+                    UserId = o.UserId,
+                    OrderDate = o.OrderDate,
+                    ShippingAddress = o.ShippingAddress,
+                    TotalAmount = o.TotalAmount
+                })
+                .ToListAsync();
+        }
+
+        public async Task<OrderResponseDTO?> GetOrderByIdAsync(string id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return null;
+
+            return new OrderResponseDTO
+            {
+                Id = order.Id,
+                UserId = order.UserId,
+                OrderDate = order.OrderDate,
+                ShippingAddress = order.ShippingAddress,
+                TotalAmount = order.TotalAmount
+            };
+        }
+
+        public async Task<List<OrderItemResponseDTO>> GetOrderItemsByOrderIdAsync(string orderId)
+        {
+            return await _context.OrderItems
+                .Where(oi => oi.OrderId == orderId)
+                .Select(oi => new OrderItemResponseDTO
+                {
+                    Id = oi.Id,
+                    OrderId = oi.OrderId,
+                    ProductId = oi.ProductId,
+                    Quantity = oi.Quantity,
+                    Price = oi.Price
+                })
+                .ToListAsync();
+        }
+
+        public async Task<OrderResponseDTO?> UpdateOrderAsync(string id, OrderResponseDTO orderUpdate)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return null;
+
+            order.UserId = orderUpdate.UserId;
+            order.OrderDate = orderUpdate.OrderDate;
+            order.ShippingAddress = orderUpdate.ShippingAddress;
+            order.TotalAmount = orderUpdate.TotalAmount;
+
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+
+            return orderUpdate;
+        }
+
+        public async Task<bool?> DeleteOrderAsync(string id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)  // Bao gồm cả OrderItems
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return null;
+
+            // Xóa tất cả các OrderItem liên quan
+            _context.OrderItems.RemoveRange(order.OrderItems);
+
+            // Xóa đơn hàng
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        //Promotion
+        //public async Task<List<PromotionResponseDTO>> GetPromotionsByProductIdAsync(string productId)
+        //{
+        //    return await _context.Promotions
+        //        .Where(p => p.ProductId == productId)
+        //        .Select(p => new PromotionResponseDTO
+        //        {
+        //            Id = p.Id,
+        //            PrValue = p.PrValue,
+        //            PrDescription = p.PrDescription,
+        //            ProductId = p.ProductId
+        //        })
+        //        .ToListAsync();
+        //}
+
+        //// Thêm mới khuyến mãi
+    //    public async Task<PromotionResponseDTO> AddPromotionAsync(PromotionResponseDTO promotionDto)
+    //    {
+    //        var promotion = new Promotion
+    //        {
+    //            Id = promotionDto.Id,
+    //            PrValue = promotionDto.PrValue,
+    //            PrDescription = promotionDto.PrDescription,
+    //            ProductId = promotionDto.ProductId
+    //        };
+
+    //        _context.Promotions.Add(promotion);
+    //        await _context.SaveChangesAsync();
+
+    //        return promotionDto;
+    //    }
+
+    //    // Cập nhật khuyến mãi
+    //    public async Task<PromotionResponseDTO?> UpdatePromotionAsync(string id, PromotionResponseDTO promotionDto)
+    //    {
+    //        var promotion = await _context.Promotions.FindAsync(id);
+    //        if (promotion == null) return null;
+
+    //        promotion.PrValue = promotionDto.PrValue;
+    //        promotion.PrDescription = promotionDto.PrDescription;
+    //        promotion.ProductId = promotionDto.ProductId;
+
+    //        _context.Promotions.Update(promotion);
+    //        await _context.SaveChangesAsync();
+
+    //        return promotionDto;
+    //    }
+
+    //    // Xóa khuyến mãi
+    //    public async Task<bool> DeletePromotionAsync(string id)
+    //    {
+    //        var promotion = await _context.Promotions.FindAsync(id);
+    //        if (promotion == null) return false;
+
+    //        _context.Promotions.Remove(promotion);
+    //        await _context.SaveChangesAsync();
+    //        return true;
+    //    }
     }
 }
