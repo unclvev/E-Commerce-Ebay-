@@ -13,7 +13,7 @@ import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
 import ProductDetailPage from './pages/ProductDetails/ProductDetailsPage';
 import ProfilePage from './pages/Profile/ProfilePage';  
-import ChangePasswordPage from '.pages/Profile/ChangePasswordPage';// Import ProfilePage
+import ChangePasswordPage from './pages/Profile/ChangePasswordPage';
 
 function App() {
   return (
