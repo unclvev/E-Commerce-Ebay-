@@ -13,6 +13,9 @@ import ManageOrder from './pages/Seller/ManageOrder';
 import ManageProducts from './pages/Seller/ManageProduct';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
+import ProductDetailPage from './pages/ProductDetails/ProductDetailsPage';
+import ProfilePage from './pages/Profile/ProfilePage';  
+import ChangePasswordPage from './pages/Profile/ChangePasswordPage';
 
 function App() {
   return (
