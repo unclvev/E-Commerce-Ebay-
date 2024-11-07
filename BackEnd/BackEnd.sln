@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService", "CartService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReviewService", "ReviewService\ReviewService.csproj", "{AD22A70C-9C05-46A2-A81E-79B0D22D443A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBusiness_", "DataBusiness_\DataBusiness_.csproj", "{F139D392-D0B0-48EC-9482-02A67F3369D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataBusiness_", "DataBusiness_\DataBusiness_.csproj", "{F139D392-D0B0-48EC-9482-02A67F3369D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SellerService", "SellerService\SellerService.csproj", "{17101D3D-56AE-44FF-A12B-3446E6103A4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{F139D392-D0B0-48EC-9482-02A67F3369D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F139D392-D0B0-48EC-9482-02A67F3369D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F139D392-D0B0-48EC-9482-02A67F3369D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17101D3D-56AE-44FF-A12B-3446E6103A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17101D3D-56AE-44FF-A12B-3446E6103A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17101D3D-56AE-44FF-A12B-3446E6103A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17101D3D-56AE-44FF-A12B-3446E6103A4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
