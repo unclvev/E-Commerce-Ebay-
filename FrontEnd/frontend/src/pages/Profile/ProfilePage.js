@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 const ProfilePage = () => {
-  const { userId } = useParams(); // Lấy userId từ URL
+  const { userId } = useParams();
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
@@ -14,7 +14,6 @@ const ProfilePage = () => {
   });
   const [editMode, setEditMode] = useState(false);
 
-  // Tải thông tin người dùng từ API
   const fetchUserProfile = async () => {
     if (!userId) {
       message.error('User ID không hợp lệ.');
@@ -24,7 +23,7 @@ const ProfilePage = () => {
     try {
       const response = await axios.get(`http://localhost:5191/api/User/${userId}`);
       if (response.status === 200) {
-        setUser(response.data); // Cập nhật thông tin người dùng
+        setUser(response.data);
       } else {
         message.error('Không tìm thấy hồ sơ người dùng.');
       }
@@ -35,18 +34,17 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    fetchUserProfile(); // Gọi API nếu có userId
-  }, [userId]); // Chạy lại khi userId thay đổi
+    fetchUserProfile();
+  }, [userId]);
 
-  // Cập nhật hồ sơ người dùng
   const handleUpdateProfile = async (values) => {
     try {
       const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}`, values);
       if (response.data && response.data.message) {
-        message.success(response.data.message); // Hiển thị thông báo thành công
+        message.success(response.data.message);
       }
-      setEditMode(false); // Tắt chế độ chỉnh sửa
-      fetchUserProfile(); // Gọi lại API để tải lại dữ liệu mới sau khi cập nhật
+      setEditMode(false);
+      fetchUserProfile();
     } catch (error) {
       console.error('Lỗi khi cập nhật hồ sơ:', error);
       message.error('Lỗi khi cập nhật hồ sơ. Vui lòng thử lại.');
@@ -54,8 +52,18 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="profile-page" style={{ padding: '20px' }}>
-      <Card title="Hồ Sơ Người Dùng" style={{ maxWidth: '600px', margin: 'auto' }}>
+    <div className="profile-page" style={{ padding: '20px', backgroundColor: '#f0f2f5' }}>
+      <Card
+        title="Hồ Sơ Người Dùng"
+        style={{
+          maxWidth: '600px',
+          margin: 'auto',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px',
+          overflow: 'hidden'
+        }}
+        headStyle={{ backgroundColor: '#001529', color: '#fff', textAlign: 'center' }}
+      >
         {editMode ? (
           <Form
             initialValues={user}
@@ -111,7 +119,7 @@ const ProfilePage = () => {
             </Form.Item>
           </Form>
         ) : (
-          <div>
+          <div style={{ textAlign: 'center', fontSize: '16px', color: '#555' }}>
             <p><strong>Tên:</strong> {user.firstName}</p>
             <p><strong>Họ:</strong> {user.lastName}</p>
             <p><strong>Địa chỉ:</strong> {user.address}</p>
@@ -120,12 +128,14 @@ const ProfilePage = () => {
             <Button
               type="primary"
               onClick={() => setEditMode(true)}
-              style={{ marginBottom: '10px' }}
+              style={{ marginBottom: '10px', borderRadius: '5px' }}
             >
               Chỉnh sửa Hồ Sơ
             </Button>
             <br />
-            <Link to={`/change-password/${userId}`}>Đổi mật khẩu</Link>
+            <Link to={`/change-password/${userId}`} style={{ color: '#001529' }}>
+              Đổi mật khẩu
+            </Link>
           </div>
         )}
       </Card>

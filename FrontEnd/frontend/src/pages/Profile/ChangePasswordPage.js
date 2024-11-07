@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Form, Input, Button, message as antdMessage } from 'antd';
 
 const ChangePasswordPage = () => {
-  const { userId } = useParams(); // Lấy userId từ URL
-  const navigate = useNavigate(); // Để chuyển hướng sau khi thay đổi mật khẩu
+  const { userId } = useParams();
+  const navigate = useNavigate();
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: ''
   });
-  const [message, setMessage] = useState('');
 
   // Xử lý khi người dùng gửi yêu cầu thay đổi mật khẩu
   const handleChangePassword = async () => {
@@ -19,40 +19,60 @@ const ChangePasswordPage = () => {
         passwordData
       );
       if (response.data && response.data.message) {
-        setMessage(response.data.message); // Hiển thị thông báo từ API
-        // Chuyển hướng về trang hồ sơ sau khi thay đổi mật khẩu thành công
+        antdMessage.success(response.data.message); // Thông báo thành công
         navigate(`/profile/${userId}`);
       }
     } catch (error) {
       console.error('Lỗi khi thay đổi mật khẩu:', error);
-      setMessage('Lỗi khi thay đổi mật khẩu. Vui lòng thử lại.');
+      antdMessage.error('Lỗi khi thay đổi mật khẩu. Vui lòng thử lại.');
     }
   };
 
   return (
-    <div className="change-password-page">
-      <h2>Đổi Mật Khẩu</h2>
-      {message && <p>{message}</p>} {/* Hiển thị thông báo nếu có */}
+    <div className="change-password-page" style={{ padding: '20px', backgroundColor: '#f0f2f5', display: 'flex', justifyContent: 'center' }}>
+      <Card
+        title="Đổi Mật Khẩu"
+        style={{
+          maxWidth: '400px',
+          width: '100%',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px',
+        }}
+        headStyle={{ backgroundColor: '#001529', color: '#fff', textAlign: 'center' }}
+      >
+        <Form
+          layout="vertical"
+          onFinish={handleChangePassword}
+        >
+          <Form.Item
+            label="Mật khẩu cũ"
+            name="oldPassword"
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ!' }]}
+          >
+            <Input.Password
+              value={passwordData.oldPassword}
+              onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+            />
+          </Form.Item>
 
-      <label>
-        Mật khẩu cũ:
-        <input
-          type="password"
-          value={passwordData.oldPassword}
-          onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-        />
-      </label>
-      <br />
-      <label>
-        Mật khẩu mới:
-        <input
-          type="password"
-          value={passwordData.newPassword}
-          onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-        />
-      </label>
-      <br />
-      <button onClick={handleChangePassword}>Thay đổi mật khẩu</button>
+          <Form.Item
+            label="Mật khẩu mới"
+            name="newPassword"
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' }]}
+          >
+            <Input.Password
+              value={passwordData.newPassword}
+              onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Thay đổi mật khẩu
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 };

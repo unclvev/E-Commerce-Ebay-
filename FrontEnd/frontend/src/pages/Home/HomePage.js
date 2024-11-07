@@ -1,76 +1,77 @@
-// src/pages/HomePage.js
-import React from 'react';
-import MainLayout from '../../layouts/MainLayout';
-import Carousel from '../../pages/Home/Includes/Carousel'; // Nếu đã tạo component Carousel
-import TrendingCategories from '../../pages/Home/Includes/TrendingCategories'; // Nếu đã tạo component TrendingCategories
+// // src/pages/HomePage.js
+// import React, { useState, useEffect } from 'react';
+// import MainLayout from '../../layouts/MainLayout';
+// import Carousel from '../../pages/Home/Includes/Carousel';
+// import TrendingCategories from '../../pages/Home/Includes/TrendingCategories';
+// import axios from 'axios'; // Import axios để gọi API
 
-const HomePage = () => {
+// const HomePage = () => {
+//     const [products, setProducts] = useState([]); // State để lưu sản phẩm
+//     const [loading, setLoading] = useState(true); // State để kiểm tra trạng thái loading
 
+//     useEffect(() => {
+//         // Gọi API để lấy danh sách sản phẩm
+//         const fetchProducts = async() => {
+//             try {
+//                 const response = await axios.get('http://localhost:5003/api/product/search'); // Đổi URL này nếu cần
+//                 setProducts(response.data); // Lưu sản phẩm vào state
+//             } catch (error) {
+//                 console.error('Error fetching products:', error);
+//             } finally {
+//                 setLoading(false); // Đổi trạng thái loading
+//             }
+//         };
 
-  // Dữ liệu cho carousel
-  const slides = [
-    {
-      image: 'https://i.ebayimg.com/images/g/SDAAAOSwMw5mxy8h/s-l960.webp',
-      title: 'Reawaken your passion for collections',
-      description: 'Explore a variety of unique cards on eBay.',
-      buttonText: 'Find yours',
-    },
-    {
-      image: 'https://stability-images-upload.s3.amazonaws.com/v1_txt2img_8b4c4198-a585-41d6-a0e0-0118bd4e657e.png',
-      title: 'Keep it classic, make it unique',
-      description: 'Discover your next pre-loved luxury find on eBay.',
-      buttonText: 'Create your look',
-    },
-    {
-      image: 'https://www.beyoung.in/blog/wp-content/uploads/2023/08/header-final.jpg',
-      title: 'Explore tech deals',
-      description: 'Get the latest gadgets at unbeatable prices.',
-      buttonText: 'Shop now',
-    },
-  ];
+//         fetchProducts(); // Gọi hàm lấy sản phẩm
+//     }, []); // Chỉ gọi một lần khi component mount
 
-  // Dữ liệu cho 2 slide riêng biệt
-  const singleSlideBanner1 = [
-    {
-      image: 'https://i.ebayimg.com/images/g/4YgAAOSwT51m1sNl/s-l960.webp',
-      title: 'Timeless appeal, timeless style',
-      description: 'Choose pre-loved and bring luxury favorites to life.',
-      buttonText: 'Shop style stables',
-    },
-  ];
+//     if (loading) {
+//         return <div > Loading... < /div>;  / / Hiển thị loading khi đang lấy dữ liệu
+//     }
 
-  const singleSlideBanner2 = [
-    {
-      image: 'https://i.ebayimg.com/images/g/HncAAOSw8FNmzvuG/s-l960.webp',
-      title: 'Sneakers for your path',
-      description: 'Express yourself with iconic footwear from the best brands.',
-      buttonText: 'Shop now',
-    },
-  ];
+//     return ( <
+//         MainLayout >
+//         <
+//         div className = "mb-8" >
+//         <
+//         Carousel slides = { slides }
+//         /> <
+//         /div>
 
-  return (
-    <MainLayout>
-      {/* Phần carousel hiển thị hình ảnh và thông điệp */} 
-      <div className="mb-8">
-        <Carousel slides={slides} />
-      </div>
+//         <
+//         div className = "mb-8" >
+//         <
+//         TrendingCategories / >
+//         <
+//         /div>
 
-      {/* Phần danh mục xu hướng */}
-      <div className="mb-8">
-        <TrendingCategories />
-      </div>
+//         { /* Hiển thị danh sách sản phẩm */ } <
+//         div className = "grid grid-cols-4 gap-8" > {
+//             products.map((product, index) => ( <
+//                 div key = { index }
+//                 className = "product-card" >
+//                 <
+//                 img src = { product.ImageUrl }
+//                 alt = { product.Name }
+//                 className = "w-full h-48 object-cover" /
+//                 >
+//                 <
+//                 h3 className = "text-xl font-semibold mt-2" > { product.Name } < /h3> <
+//                 p className = "text-gray-500" > { product.Description } < /p> <
+//                 div className = "flex justify-between items-center mt-4" >
+//                 <
+//                 span className = "text-lg font-bold" > $ { product.Price } < /span> {
+//                     product.OriginalPrice && ( <
+//                         span className = "line-through text-gray-400" > $ { product.OriginalPrice } < /span>
+//                     )
+//                 } <
+//                 /div> <
+//                 /div>
+//             ))
+//         } <
+//         /div> <
+//         /MainLayout>
+//     );
+// };
 
-      {/* Banner riêng cho slide thứ 4 */}
-      <div className="mb-8">
-        <Carousel slides={singleSlideBanner1} hideNavigation={true} />
-      </div>
-
-      {/* Banner riêng cho slide thứ 5 */}
-      <div className="mb-8">
-        <Carousel slides={singleSlideBanner2} hideNavigation={true} />
-      </div>
-    </MainLayout>
-  );
-};
-
-export default HomePage;
+// export default HomePage;
