@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using DataBusiness_.Models; // Thư mục chứa model User
+ // Thư mục chứa model User
 using Microsoft.EntityFrameworkCore;
 using System;
+using DataBusiness_.Models;
 
 namespace UserService.Controllers
 {

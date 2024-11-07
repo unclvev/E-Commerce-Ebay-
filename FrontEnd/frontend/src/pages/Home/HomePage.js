@@ -1,13 +1,14 @@
-// src/pages/HomePage.js
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import MainLayout from '../../layouts/MainLayout';
-import Carousel from '../../pages/Home/Includes/Carousel'; // Nếu đã tạo component Carousel
-import TrendingCategories from '../../pages/Home/Includes/TrendingCategories'; // Nếu đã tạo component TrendingCategories
+import Carousel from '../../pages/Home/Includes/Carousel';
+import TrendingCategories from '../../pages/Home/Includes/TrendingCategories';
+import axios from 'axios';
 
 const HomePage = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-
-  // Dữ liệu cho carousel
+  // Định nghĩa dữ liệu slides cho carousel
   const slides = [
     {
       image: 'https://i.ebayimg.com/images/g/SDAAAOSwMw5mxy8h/s-l960.webp',
@@ -28,46 +29,53 @@ const HomePage = () => {
       buttonText: 'Shop now',
     },
   ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5003/api/product/search'); 
+        setProducts(response.data);  
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false); 
+      }
+    };
 
-  // Dữ liệu cho 2 slide riêng biệt
-  const singleSlideBanner1 = [
-    {
-      image: 'https://i.ebayimg.com/images/g/4YgAAOSwT51m1sNl/s-l960.webp',
-      title: 'Timeless appeal, timeless style',
-      description: 'Choose pre-loved and bring luxury favorites to life.',
-      buttonText: 'Shop style stables',
-    },
-  ];
+    fetchProducts();  
+  }, []);  
 
-  const singleSlideBanner2 = [
-    {
-      image: 'https://i.ebayimg.com/images/g/HncAAOSw8FNmzvuG/s-l960.webp',
-      title: 'Sneakers for your path',
-      description: 'Express yourself with iconic footwear from the best brands.',
-      buttonText: 'Shop now',
-    },
-  ];
+  if (loading) {
+    return <div>Loading...</div>;  
+  }
 
   return (
     <MainLayout>
-      {/* Phần carousel hiển thị hình ảnh và thông điệp */} 
+
       <div className="mb-8">
-        <Carousel slides={slides} />
+        <Carousel slides={slides} /> {/* Truyền dữ liệu slides vào Carousel */}
       </div>
 
-      {/* Phần danh mục xu hướng */}
       <div className="mb-8">
         <TrendingCategories />
       </div>
-
-      {/* Banner riêng cho slide thứ 4 */}
-      <div className="mb-8">
-        <Carousel slides={singleSlideBanner1} hideNavigation={true} />
-      </div>
-
-      {/* Banner riêng cho slide thứ 5 */}
-      <div className="mb-8">
-        <Carousel slides={singleSlideBanner2} hideNavigation={true} />
+      <div className="grid grid-cols-4 gap-8">
+        {products.map((product, index) => (
+          <div key={index} className="product-card">
+            <img
+              src={product.ImageUrl}
+              alt={product.Name}
+              className="w-full h-48 object-cover"
+            />
+            <h3 className="text-xl font-semibold mt-2">{product.Name}</h3>
+            <p className="text-gray-500">{product.Description}</p>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-lg font-bold">${product.Price}</span>
+              {product.OriginalPrice && (
+                <span className="line-through text-gray-400">${product.OriginalPrice}</span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </MainLayout>
   );
