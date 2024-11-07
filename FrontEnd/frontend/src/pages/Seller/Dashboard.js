@@ -20,15 +20,18 @@ const SellerDashboard = () => {
             <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
-                    <Link to="/seller/products">
-                        <Button type="primary">Manage Products</Button>
+                    <Link to="/seller/product">
+                        <Button>Manage Products</Button>
                     </Link>
-                    <Link to="/seller/orders">
+                    <Link to="/seller/order">
                         <Button>Manage Orders</Button>
                     </Link>
-                    <Link to="/seller/account">
-                        <Button>Account Settings</Button>
+                    <Link to="/seller/Promotion">
+                        <Button>Promotions </Button>
                     </Link>
+                    {/* <Link to="/seller/account">
+                        <Button>Account Settings</Button>
+                    </Link> */}
                 </div>
             </div>
 
@@ -47,7 +50,6 @@ const SellerDashboard = () => {
 
             {/* Bảng sản phẩm */}
             <div className="mt-6">
-                <Button type="primary">Add Product</Button>
                 <Table className="mt-4" dataSource={dataSource} columns={columns} />
             </div>
         </div>
