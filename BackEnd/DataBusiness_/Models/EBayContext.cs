@@ -49,7 +49,6 @@ namespace DataBusiness_.Models
                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyCnn"));
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

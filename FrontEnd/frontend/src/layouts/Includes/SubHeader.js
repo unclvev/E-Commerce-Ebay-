@@ -1,45 +1,44 @@
-import React from 'react'
-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function SubHeader() {
+  const [categories, setCategories] = useState([]);
 
-    const menuItems = [
-        { id: 1, name: 'Home' },
-        { id: 2, name: 'Saved' },
-        { id: 3, name: 'Electronics' },
-        { id: 4, name: 'Motors' },
-        { id: 5, name: 'Fashion' },
-        { id: 6, name: 'Collectables and Art' },
-        { id: 7, name: 'Sports' },
-        { id: 8, name: 'Health & Beauty' },
-        { id: 9, name: 'Industrial Equipment' },
-        { id: 10, name: 'Home & Garden' },
-        { id: 11, name: 'Sell' },
-    ]
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5003/api/product/categories');
+        console.log(response.data);  // Log dữ liệu API ra console
+        setCategories(response.data);  // Lưu dữ liệu categories vào state
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+  
 
-    return (
-        <>
-            <div id="SubHeader" className="border-b">
-                <div className="flex items-center justify-between w-full mx-auto max-w-[1200px]">
-                    <ul
-                        id="HeaderLeft"
-                        className="
-                            flex 
-                            items-center 
-                            text-[13px] 
-                            text-[#333333]
-                            px-2 
-                            h-8
-                        "
-                    >
-                        {menuItems.map(item => (
-                            <li key={item.id} className="px-3 hover:underline cursor-pointer">
-                                {item.name}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
-        </>
-    )
+  return (
+    <>
+      <div id="SubHeader" className="border-b">
+        <div className="flex items-center justify-between w-full mx-auto max-w-[1200px]">
+          <ul
+            id="HeaderLeft"
+            className="flex items-center text-[13px] text-[#333333] px-2 h-8"
+          >
+            {categories.length > 0 ? ( // Kiểm tra nếu categories có dữ liệu
+              categories.map((category, index) => (
+                <li key={index} className="px-3 hover:underline cursor-pointer">
+                  {category.categoryName} {/* Hiển thị tên category */}
+                </li>
+              ))
+            ) : (
+              <li className="px-3">No categories available</li> // Thông báo khi không có dữ liệu
+            )}
+          </ul>
+        </div>
+      </div>
+    </>
+  );
 }
