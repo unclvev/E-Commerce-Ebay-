@@ -215,8 +215,6 @@ namespace SellerService.Repository
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             if (order == null) return null;
 
-            order.UserId = orderUpdate.UserId;
-            order.OrderDate = orderUpdate.OrderDate;
             order.ShippingAddress = orderUpdate.ShippingAddress;
             order.TotalAmount = orderUpdate.TotalAmount;
 
@@ -225,6 +223,38 @@ namespace SellerService.Repository
 
             return orderUpdate;
         }
+
+        public async Task<OrderResponseDTO?> RevertOrderAsync(string id,  OrderResponseDTO orderUpdate)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == order.UserId);
+            var orderItems = await _context.OrderItems.Where(oi => oi.OrderId == id).ToListAsync();
+
+            if (order == null || user == null) return null;
+
+            // Khởi tạo lại TotalAmount về 0 trước khi tính toán lại
+            order.TotalAmount = 0;
+
+            // Tính toán lại TotalAmount từ các OrderItem
+            foreach (var item in orderItems)
+            {
+                if (item.Price.HasValue && item.Quantity.HasValue)  // Đảm bảo giá trị không null
+                {
+                    order.TotalAmount += item.Price.Value * item.Quantity.Value;
+                }
+            }
+
+            // Cập nhật ShippingAddress từ địa chỉ người dùng
+            order.ShippingAddress = user.Address;
+
+            // Cập nhật đơn hàng vào cơ sở dữ liệu
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+
+            return orderUpdate;
+        }
+
+
 
         public async Task<bool?> DeleteOrderAsync(string id)
         {
