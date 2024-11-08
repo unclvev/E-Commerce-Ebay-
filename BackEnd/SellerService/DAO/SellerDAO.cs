@@ -56,6 +56,10 @@ namespace SellerService.DAO
         {
             return await _sellerRepository.UpdateOrderAsync(id, orderUpdate);
         }
+        public async Task<OrderResponseDTO?> RevertOrderAsync(string id, OrderResponseDTO orderUpdate)
+        {
+            return await _sellerRepository.RevertOrderAsync(id, orderUpdate);
+        }
 
         public async Task<bool?> DeleteOrderAsync(string id)
         {

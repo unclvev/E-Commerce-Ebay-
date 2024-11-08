@@ -11,6 +11,7 @@ import ProfilePage from './pages/Profile/ProfilePage';
 import SellerDashboard from './pages/Seller/Dashboard';
 import ManageOrder from './pages/Seller/ManageOrder';
 import ManageProducts from './pages/Seller/ManageProduct';
+import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
 
@@ -31,7 +32,7 @@ function App() {
         <Route path='/seller/promotion' element={<Promotion />} />
         <Route path='/seller/store' element={<StoreManagement />} />
         <Route path='/product' element={<ProductDetailPage />} />
-
+        <Route path='/seller/order/:orderId' element={<OrderDetail />} />
         {/* Add the route for the ProfilePage */}
         <Route path="/profile/:userId" element={<ProfilePage />} />
         {/* <Route path="/change-password/:userId" element={<ChangePasswordPage />} /> */}
