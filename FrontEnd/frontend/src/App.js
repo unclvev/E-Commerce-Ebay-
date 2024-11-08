@@ -14,7 +14,6 @@ import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
-
 function App() {
   return (
     <BrowserRouter>
