@@ -1,5 +1,6 @@
 import { Button, Input, Table } from 'antd';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Promotion = () => {
     // Sample product data
@@ -53,11 +54,21 @@ const Promotion = () => {
         <div className="p-6">
             {/* Page Header */}
             <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
-                <div className="text-xl font-semibold">Manage Promotions</div>
-                <Button type="primary">Add New Promotion</Button>
+                <div className="text-xl font-semibold">Seller Dashboard</div>
+                <div className="space-x-4">
+                    <Link to="/seller/product">
+                        <Button type="default">Manage Products</Button>
+                    </Link>
+                    <Link to="/seller/order">
+                        <Button type="default">Manage Orders</Button>
+                    </Link>
+                    <Link to="/seller/dashboard">
+                        <Button type="default">Dashboard</Button>
+                    </Link>
+                </div>
             </div>
-
             {/* Product Table */}
+            <Button type="primary">Add New Promotion</Button>
             <Table dataSource={products} columns={columns} />
         </div>
     );

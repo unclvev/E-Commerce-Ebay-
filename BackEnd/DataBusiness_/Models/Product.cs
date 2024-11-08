@@ -12,6 +12,7 @@ namespace DataBusiness_.Models
             OrderItems = new HashSet<OrderItem>();
             ProductImages = new HashSet<ProductImage>();
             ProductVariations = new HashSet<ProductVariation>();
+            Promotions = new HashSet<Promotion>();
             Reviews = new HashSet<Review>();
         }
 
@@ -29,6 +30,7 @@ namespace DataBusiness_.Models
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<ProductImage> ProductImages { get; set; }
         public virtual ICollection<ProductVariation> ProductVariations { get; set; }
+        public virtual ICollection<Promotion> Promotions { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
     }
 }
