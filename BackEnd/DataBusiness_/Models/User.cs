@@ -25,6 +25,8 @@ namespace DataBusiness_.Models
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
         public DateTime? RefreshTokenCreate { get; set; }
+        public string? Otp { get; set; }
+        public DateTime? Otpexpiry { get; set; }
 
         public virtual ICollection<Bid> Bids { get; set; }
         public virtual ICollection<Listing> Listings { get; set; }
