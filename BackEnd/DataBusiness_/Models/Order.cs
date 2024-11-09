@@ -15,6 +15,7 @@ namespace DataBusiness_.Models
         public DateTime? OrderDate { get; set; }
         public string? ShippingAddress { get; set; }
         public decimal? TotalAmount { get; set; }
+        public string? OrderStatus { get; set; }
 
         public virtual User? User { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }

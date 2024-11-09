@@ -57,10 +57,10 @@ namespace SellerService.Controllers
             return NoContent();
         }
 
-        [HttpPut("revertorders/{id}")]
-        public async Task<IActionResult> RevertOrder(string id, OrderResponseDTO orderUpdate)
+        [HttpPut("calculateorders/{id}")]
+        public async Task<IActionResult> CalculateOrder(string id, OrderResponseDTO orderUpdate)
         {
-            var success = await _sellerDAO.RevertOrderAsync(id, orderUpdate);
+            var success = await _sellerDAO.CalculateOrderAsync(id, orderUpdate);
             if (success == null)
             {
                 return NotFound();

@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DataBusiness_.Models
 {
-    public partial class EBayContext : DbContext
+    public partial class EbayContext : DbContext
     {
-        public EBayContext()
+        public EbayContext()
         {
         }
 
-        public EBayContext(DbContextOptions<EBayContext> options)
+        public EbayContext(DbContextOptions<EbayContext> options)
             : base(options)
         {
         }
@@ -31,6 +31,7 @@ namespace DataBusiness_.Models
         public virtual DbSet<ProductListing> ProductListings { get; set; } = null!;
         public virtual DbSet<ProductReview> ProductReviews { get; set; } = null!;
         public virtual DbSet<ProductVariation> ProductVariations { get; set; } = null!;
+        public virtual DbSet<Promotion> Promotions { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
         public virtual DbSet<Size> Sizes { get; set; } = null!;
         public virtual DbSet<Store> Stores { get; set; } = null!;
@@ -43,9 +44,11 @@ namespace DataBusiness_.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
-            if (!optionsBuilder.IsConfigured) { optionsBuilder.UseSqlServer(config.GetConnectionString("value")); }
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server =QTRUMLEE; database = Ebay; uid=sa;pwd=root;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,12 +70,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Listing)
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__Bid__ListingId__5BE2A6F2");
+                    .HasConstraintName("FK__Bid__ListingId__44FF419A");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Bid__UserId__5CD6CB2B");
+                    .HasConstraintName("FK__Bid__UserId__45F365D3");
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -99,12 +102,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Category)
                     .WithMany()
                     .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK__CategoryL__Categ__778AC167");
+                    .HasConstraintName("FK__CategoryL__Categ__6383C8BA");
 
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__CategoryL__Listi__787EE5A0");
+                    .HasConstraintName("FK__CategoryL__Listi__6477ECF3");
             });
 
             modelBuilder.Entity<Color>(entity =>
@@ -137,7 +140,7 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__Inventory__Produ__6E01572D");
+                    .HasConstraintName("FK__Inventory__Produ__571DF1D5");
             });
 
             modelBuilder.Entity<Listing>(entity =>
@@ -163,17 +166,17 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Listings)
                     .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK__Listing__Categor__4E88ABD4");
+                    .HasConstraintName("FK__Listing__Categor__37A5467C");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Listings)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__Listing__Product__4CA06362");
+                    .HasConstraintName("FK__Listing__Product__35BCFE0A");
 
                 entity.HasOne(d => d.Seller)
                     .WithMany(p => p.Listings)
                     .HasForeignKey(d => d.SellerId)
-                    .HasConstraintName("FK__Listing__SellerI__4D94879B");
+                    .HasConstraintName("FK__Listing__SellerI__36B12243");
             });
 
             modelBuilder.Entity<ListingBid>(entity =>
@@ -189,12 +192,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Bid)
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
-                    .HasConstraintName("FK__ListingBi__BidId__5FB337D6");
+                    .HasConstraintName("FK__ListingBi__BidId__48CFD27E");
 
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__ListingBi__Listi__5EBF139D");
+                    .HasConstraintName("FK__ListingBi__Listi__47DBAE45");
             });
 
             modelBuilder.Entity<Material>(entity =>
@@ -214,6 +217,8 @@ namespace DataBusiness_.Models
 
                 entity.Property(e => e.OrderDate).HasColumnType("datetime");
 
+                entity.Property(e => e.OrderStatus).HasMaxLength(50);
+
                 entity.Property(e => e.ShippingAddress).HasMaxLength(255);
 
                 entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
@@ -223,7 +228,7 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Order__UserId__5165187F");
+                    .HasConstraintName("FK__Order__UserId__3A81B327");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
@@ -241,12 +246,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__OrderItem__Order__5441852A");
+                    .HasConstraintName("FK__OrderItem__Order__3D5E1FD2");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__OrderItem__Produ__5535A963");
+                    .HasConstraintName("FK__OrderItem__Produ__3E52440B");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -266,6 +271,57 @@ namespace DataBusiness_.Models
                 entity.Property(e => e.SaleEndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.SaleStartDate).HasColumnType("datetime");
+
+                entity.HasMany(d => d.Colors)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductColor",
+                        l => l.HasOne<Color>().WithMany().HasForeignKey("ColorId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductCo__Color__72C60C4A"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductCo__Produ__71D1E811"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "ColorId").HasName("PK__ProductC__7CD6B0B9CDD76B64");
+
+                            j.ToTable("ProductColor");
+
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+
+                            j.IndexerProperty<string>("ColorId").HasMaxLength(50);
+                        });
+
+                entity.HasMany(d => d.Sizes)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductSize",
+                        l => l.HasOne<Size>().WithMany().HasForeignKey("SizeId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSi__SizeI__6EF57B66"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSi__Produ__6E01572D"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "SizeId").HasName("PK__ProductS__0C37165A54A9E987");
+
+                            j.ToTable("ProductSize");
+
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+
+                            j.IndexerProperty<string>("SizeId").HasMaxLength(50);
+                        });
+
+                entity.HasMany(d => d.Stores)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductStore",
+                        l => l.HasOne<Store>().WithMany().HasForeignKey("StoreId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSt__Store__6B24EA82"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSt__Produ__6A30C649"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "StoreId").HasName("PK__ProductS__B7B4E9DD5820BCAD");
+
+                            j.ToTable("ProductStore");
+
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+
+                            j.IndexerProperty<string>("StoreId").HasMaxLength(50);
+                        });
             });
 
             modelBuilder.Entity<ProductImage>(entity =>
@@ -281,7 +337,7 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductImages)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__ProductIm__Produ__49C3F6B7");
+                    .HasConstraintName("FK__ProductIm__Produ__32E0915F");
             });
 
             modelBuilder.Entity<ProductListing>(entity =>
@@ -297,12 +353,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__ProductLi__Listi__75A278F5");
+                    .HasConstraintName("FK__ProductLi__Listi__619B8048");
 
                 entity.HasOne(d => d.Product)
                     .WithMany()
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__ProductLi__Produ__74AE54BC");
+                    .HasConstraintName("FK__ProductLi__Produ__60A75C0F");
             });
 
             modelBuilder.Entity<ProductReview>(entity =>
@@ -318,12 +374,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Product)
                     .WithMany()
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__ProductRe__Produ__7A672E12");
+                    .HasConstraintName("FK__ProductRe__Produ__66603565");
 
                 entity.HasOne(d => d.Review)
                     .WithMany()
                     .HasForeignKey(d => d.ReviewId)
-                    .HasConstraintName("FK__ProductRe__Revie__7B5B524B");
+                    .HasConstraintName("FK__ProductRe__Revie__6754599E");
             });
 
             modelBuilder.Entity<ProductVariation>(entity =>
@@ -337,7 +393,23 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProductVariations)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__ProductVa__Produ__46E78A0C");
+                    .HasConstraintName("FK__ProductVa__Produ__300424B4");
+            });
+
+            modelBuilder.Entity<Promotion>(entity =>
+            {
+                entity.ToTable("Promotion");
+
+                entity.Property(e => e.Id).HasMaxLength(50);
+
+                entity.Property(e => e.PrDescription).HasMaxLength(250);
+
+                entity.Property(e => e.ProductId).HasMaxLength(50);
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.Promotions)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("FK__Promotion__Produ__5EBF139D");
             });
 
             modelBuilder.Entity<Review>(entity =>
@@ -359,12 +431,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__Review__ProductI__5812160E");
+                    .HasConstraintName("FK__Review__ProductI__412EB0B6");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Review__UserId__59063A47");
+                    .HasConstraintName("FK__Review__UserId__4222D4EF");
             });
 
             modelBuilder.Entity<Size>(entity =>
@@ -402,7 +474,7 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Inventory)
                     .WithMany(p => p.StoreInventories)
                     .HasForeignKey(d => d.InventoryId)
-                    .HasConstraintName("FK__StoreInve__Inven__72C60C4A");
+                    .HasConstraintName("FK__StoreInve__Inven__5BE2A6F2");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -423,6 +495,14 @@ namespace DataBusiness_.Models
 
                 entity.Property(e => e.PhoneNumber).HasMaxLength(50);
 
+                entity.Property(e => e.RefreshToken).HasMaxLength(100);
+
+                entity.Property(e => e.RefreshTokenCreate).HasColumnType("datetime");
+
+                entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Roles).HasMaxLength(10);
+
                 entity.Property(e => e.Username).HasMaxLength(255);
             });
 
@@ -439,12 +519,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Bid)
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
-                    .HasConstraintName("FK__UserBid__BidId__6B24EA82");
+                    .HasConstraintName("FK__UserBid__BidId__5441852A");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserBid__UserId__6A30C649");
+                    .HasConstraintName("FK__UserBid__UserId__534D60F1");
             });
 
             modelBuilder.Entity<UserListing>(entity =>
@@ -460,12 +540,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__UserListi__Listi__628FA481");
+                    .HasConstraintName("FK__UserListi__Listi__4BAC3F29");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserListi__UserI__619B8048");
+                    .HasConstraintName("FK__UserListi__UserI__4AB81AF0");
             });
 
             modelBuilder.Entity<UserOrder>(entity =>
@@ -481,12 +561,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Order)
                     .WithMany()
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__UserOrder__Order__656C112C");
+                    .HasConstraintName("FK__UserOrder__Order__4E88ABD4");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserOrder__UserI__6477ECF3");
+                    .HasConstraintName("FK__UserOrder__UserI__4D94879B");
             });
 
             modelBuilder.Entity<UserReview>(entity =>
@@ -502,12 +582,12 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Review)
                     .WithMany()
                     .HasForeignKey(d => d.ReviewId)
-                    .HasConstraintName("FK__UserRevie__Revie__68487DD7");
+                    .HasConstraintName("FK__UserRevie__Revie__5165187F");
 
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__UserRevie__UserI__6754599E");
+                    .HasConstraintName("FK__UserRevie__UserI__5070F446");
             });
 
             OnModelCreatingPartial(modelBuilder);

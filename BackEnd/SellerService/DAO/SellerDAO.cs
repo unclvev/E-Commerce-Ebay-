@@ -1,4 +1,5 @@
-﻿using SellerService.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using SellerService.DTO;
 using SellerService.Repository;
 
 namespace SellerService.DAO
@@ -56,14 +57,39 @@ namespace SellerService.DAO
         {
             return await _sellerRepository.UpdateOrderAsync(id, orderUpdate);
         }
-        public async Task<OrderResponseDTO?> RevertOrderAsync(string id, OrderResponseDTO orderUpdate)
+        public async Task<OrderResponseDTO?> CalculateOrderAsync(string id, OrderResponseDTO orderUpdate)
         {
-            return await _sellerRepository.RevertOrderAsync(id, orderUpdate);
+            return await _sellerRepository.CalculateOrderAsync(id, orderUpdate);
         }
 
         public async Task<bool?> DeleteOrderAsync(string id)
         {
             return await _sellerRepository.DeleteOrderAsync(id);
+        }
+        //Promotion
+        //gọi các method trong repository
+        public async Task<List<PromotionResponseDTO>> GetAllPromotionsAsync()
+        {
+            return await _sellerRepository.GetAllPromotionsAsync();
+        }
+        public async Task<List<PromotionResponseDTO>> GetPromotionsByProductIdAsync(string productId)
+        {
+            return await _sellerRepository.GetPromotionsByProductIdAsync(productId);
+        }
+
+        public async Task<PromotionResponseDTO> AddPromotionAsync(PromotionResponseDTO promotionDto)
+        {
+            return await _sellerRepository.AddPromotionAsync(promotionDto);
+        }
+
+        public async Task<PromotionResponseDTO?> UpdatePromotionAsync(string id, PromotionResponseDTO promotionDto)
+        {
+            return await _sellerRepository.UpdatePromotionAsync(id, promotionDto);
+        }
+
+        public async Task<bool> DeletePromotionAsync(string id)
+        {
+            return await _sellerRepository.DeletePromotionAsync(id);
         }
     }
 }
