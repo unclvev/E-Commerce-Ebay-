@@ -1,6 +1,7 @@
-import { Button, Card, Input } from 'antd';
+import { Button, Card, Input, message } from 'antd';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, touched }) => (
   <>
@@ -90,6 +91,7 @@ const RegistrationForm = () => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const navigate = useNavigate(); // Dùng để điều hướng sau khi đăng ký thành công
 
   useEffect(() => {
     validateForm();
@@ -120,10 +122,18 @@ const RegistrationForm = () => {
     validateForm();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      console.log('Form submitted:', formData);
+      try {
+        const response = await axios.post('http://localhost:5095/api/Register', formData);
+        // Xử lý thành công, ví dụ lưu thông tin người dùng vào session hoặc localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.user)); // Lưu thông tin người dùng vào localStorage
+        message.success('Registration successful!');
+        navigate('/login'); // Điều hướng đến trang đăng nhập
+      } catch (error) {
+        message.error('Registration failed! Please try again.');
+      }
     }
   };
 
