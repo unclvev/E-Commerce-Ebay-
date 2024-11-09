@@ -40,13 +40,13 @@ const ManageOrder = () => {
                 const status = record.shippingAddress === null
                     ? 'Delivered'
                     : record.totalAmount === null
-                        ? 'Pending'
+                        ? 'Shipping'
                         : null;
                 return (
                     <div>
-                        {totalAmount !== null ? `$${totalAmount.toFixed(2)}` : 'Not Paid'}
+                        {totalAmount !== null ? `$${totalAmount.toFixed(2)}` : 'Paid'}
                         <Tag color={status === 'Delivered' ? 'green' : 'orange'}>
-                            {status || 'Processing'}
+                            {status || 'Pending'}
                         </Tag>
                     </div>
                 );
@@ -57,7 +57,9 @@ const ManageOrder = () => {
             key: 'action',
             render: (_, record) => (
                 <div className="space-x-2">
-                    <Button type="link">View</Button>
+                    <Link to={`/seller/order/${record.id}`}> {/* Điều hướng tới trang OrderDetail với OrderId */}
+                        <Button type="primary">View</Button>
+                    </Link>
                     <Button type="link" danger>
                         Cancel
                     </Button>

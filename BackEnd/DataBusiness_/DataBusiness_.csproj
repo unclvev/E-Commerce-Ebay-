@@ -18,6 +18,13 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="DAO\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

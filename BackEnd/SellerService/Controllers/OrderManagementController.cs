@@ -57,6 +57,17 @@ namespace SellerService.Controllers
             return NoContent();
         }
 
+        [HttpPut("revertorders/{id}")]
+        public async Task<IActionResult> RevertOrder(string id, OrderResponseDTO orderUpdate)
+        {
+            var success = await _sellerDAO.RevertOrderAsync(id, orderUpdate);
+            if (success == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
         // Delete order by ID
         [HttpDelete("orders/{id}")]
         public async Task<IActionResult> DeleteOrder(string id)

@@ -404,3 +404,6 @@ appsettings.*.json
 appsettings.json
 FrontEnd/frontend/package-lock.json
 FrontEnd/frontend/package.json
+
+# appsettings.json
+appsettings.json
