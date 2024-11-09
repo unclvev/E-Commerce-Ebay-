@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, message as antdMessage } from 'antd';
+import MainLayout from '../../layouts/MainLayout'; // Đảm bảo rằng đường dẫn đúng
 
 const ChangePasswordPage = () => {
   const { userId } = useParams();
@@ -11,15 +12,11 @@ const ChangePasswordPage = () => {
     newPassword: ''
   });
 
-  // Xử lý khi người dùng gửi yêu cầu thay đổi mật khẩu
   const handleChangePassword = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:5191/api/User/change-password/${userId}`,
-        passwordData
-      );
+      const response = await axios.put(`http://localhost:5191/api/User/change-password/${userId}`, passwordData);
       if (response.data && response.data.message) {
-        antdMessage.success(response.data.message); // Thông báo thành công
+        antdMessage.success(response.data.message);
         navigate(`/profile/${userId}`);
       }
     } catch (error) {
@@ -29,51 +26,38 @@ const ChangePasswordPage = () => {
   };
 
   return (
-    <div className="change-password-page" style={{ padding: '20px', backgroundColor: '#f0f2f5', display: 'flex', justifyContent: 'center' }}>
-      <Card
-        title="Đổi Mật Khẩu"
-        style={{
-          maxWidth: '400px',
-          width: '100%',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px',
-        }}
-        headStyle={{ backgroundColor: '#001529', color: '#fff', textAlign: 'center' }}
-      >
-        <Form
-          layout="vertical"
-          onFinish={handleChangePassword}
-        >
-          <Form.Item
-            label="Mật khẩu cũ"
-            name="oldPassword"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ!' }]}
+    <MainLayout>
+      <div style={{ padding: '40px 0', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 130px)', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: '600px' }}>
+          <Card
+            title="Đổi Mật Khẩu"
+            style={{
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              borderRadius: '10px',
+            }}
+            headStyle={{ backgroundColor: '#3b5998', color: '#fff', textAlign: 'center' }}
           >
-            <Input.Password
-              value={passwordData.oldPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Mật khẩu mới"
-            name="newPassword"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' }]}
-          >
-            <Input.Password
-              value={passwordData.newPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Thay đổi mật khẩu
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+            <Form layout="vertical" onFinish={handleChangePassword}>
+              <Form.Item label="Mật khẩu cũ" name="oldPassword" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ!' }]}>
+                <Input.Password
+                  value={passwordData.oldPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                />
+              </Form.Item>
+              <Form.Item label="Mật khẩu mới" name="newPassword" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' }]}>
+                <Input.Password
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" block>Thay đổi mật khẩu</Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </div>
+      </div>
+    </MainLayout>
   );
 };
 

@@ -1,6 +1,9 @@
 // src/App.js
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { default as BusinessRegistrationForm, default as RegistrationForm } from './pages/Authentication/Register';
+import Header from './layouts/Includes/Header';
+import Footer from './layouts/Includes/Footer';
+import BusinessRegistrationForm from './pages/Authentication/Register';
+import RegistrationForm from './pages/Authentication/Register';
 import LoginPage from './pages/Authentication/login';
 import CartPage from './pages/Cart/CartPage';
 import CheckoutPage from './pages/CheckOut/CheckoutPage';
@@ -15,9 +18,14 @@ import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
+
+import ChangePasswordPage from './pages/Profile/ChangePasswordPage'; 
+
+
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />
@@ -36,9 +44,9 @@ function App() {
         <Route path='/seller/order/:orderId' element={<OrderDetail />} />
         {/* Add the route for the ProfilePage */}
         <Route path="/profile/:userId" element={<ProfilePage />} />
-        {/* <Route path="/change-password/:userId" element={<ChangePasswordPage />} /> */}
-
+        <Route path="/change-password/:userId" element={<ChangePasswordPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

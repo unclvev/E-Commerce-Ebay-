@@ -21,6 +21,10 @@ namespace DataBusiness_.Models
         public string? LastName { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? Roles { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenCreate { get; set; }
 
         public virtual ICollection<Bid> Bids { get; set; }
         public virtual ICollection<Listing> Listings { get; set; }
