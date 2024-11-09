@@ -402,6 +402,7 @@ yarn-error.log*
 # ASP.NET Core-specific
 appsettings.*.json
 appsettings.json
+BackEnd/UserService/appsettings.json
 FrontEnd/frontend/package-lock.json
 FrontEnd/frontend/package.json
 

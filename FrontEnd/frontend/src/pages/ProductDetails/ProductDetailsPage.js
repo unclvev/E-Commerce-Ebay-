@@ -7,7 +7,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const ProductDetailPage = () => {
+const ProductDetailsPage = () => {
     return (
         <MainLayout>
             <div className="product_cpn max-h-[600px] h-full">
@@ -116,4 +116,4 @@ const ProductDetailPage = () => {
     )
 }
 
-export default ProductDetailPage;
+export default ProductDetailsPage;
