@@ -49,6 +49,7 @@ namespace DataBusiness_.Models
                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyCnn"));
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -437,6 +438,14 @@ namespace DataBusiness_.Models
                 entity.Property(e => e.FirstName).HasMaxLength(255);
 
                 entity.Property(e => e.LastName).HasMaxLength(255);
+
+                entity.Property(e => e.Otp)
+                    .HasMaxLength(100)
+                    .HasColumnName("OTP");
+
+                entity.Property(e => e.Otpexpiry)
+                    .HasColumnType("datetime")
+                    .HasColumnName("OTPExpiry");
 
                 entity.Property(e => e.Password).HasMaxLength(255);
 

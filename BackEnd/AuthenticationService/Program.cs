@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AuthenticationService.Utils;
 using DataBusiness_.Models;
+using APIGateWay.config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +26,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 
 // Register Jwt utility as a service
 builder.Services.AddScoped<Jwt>();
 builder.Services.AddScoped<PasswordHandler>();
+builder.Services.AddScoped<Email>();    
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
