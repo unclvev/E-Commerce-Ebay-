@@ -9,9 +9,9 @@ namespace SellerService.Repository
 {
     public class SellerRepository
     {
-        private readonly EBayContext _context;
+        private readonly EbayContext _context;
 
-        public SellerRepository(EBayContext context)
+        public SellerRepository(EbayContext context)
         {
             _context = context;
         }
@@ -172,7 +172,8 @@ namespace SellerService.Repository
                     UserId = o.UserId,
                     OrderDate = o.OrderDate,
                     ShippingAddress = o.ShippingAddress,
-                    TotalAmount = o.TotalAmount
+                    TotalAmount = o.TotalAmount,
+                    OrderStatus = o.OrderStatus
                 })
                 .ToListAsync();
         }
@@ -191,7 +192,8 @@ namespace SellerService.Repository
                 UserId = order.UserId,
                 OrderDate = order.OrderDate,
                 ShippingAddress = order.ShippingAddress,
-                TotalAmount = order.TotalAmount
+                TotalAmount = order.TotalAmount,
+                OrderStatus = order.OrderStatus
             };
         }
 
@@ -205,7 +207,7 @@ namespace SellerService.Repository
                     OrderId = oi.OrderId,
                     ProductId = oi.ProductId,
                     Quantity = oi.Quantity,
-                    Price = oi.Price
+                    Price = oi.Price,
                 })
                 .ToListAsync();
         }
@@ -215,8 +217,7 @@ namespace SellerService.Repository
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             if (order == null) return null;
 
-            order.ShippingAddress = orderUpdate.ShippingAddress;
-            order.TotalAmount = orderUpdate.TotalAmount;
+            order.OrderStatus = orderUpdate.OrderStatus;
 
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
@@ -224,7 +225,7 @@ namespace SellerService.Repository
             return orderUpdate;
         }
 
-        public async Task<OrderResponseDTO?> RevertOrderAsync(string id,  OrderResponseDTO orderUpdate)
+        public async Task<OrderResponseDTO?> CalculateOrderAsync(string id,  OrderResponseDTO orderUpdate)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == order.UserId);
@@ -274,62 +275,77 @@ namespace SellerService.Repository
             return true;
         }
         //Promotion
-        //public async Task<List<PromotionResponseDTO>> GetPromotionsByProductIdAsync(string productId)
-        //{
-        //    return await _context.Promotions
-        //        .Where(p => p.ProductId == productId)
-        //        .Select(p => new PromotionResponseDTO
-        //        {
-        //            Id = p.Id,
-        //            PrValue = p.PrValue,
-        //            PrDescription = p.PrDescription,
-        //            ProductId = p.ProductId
-        //        })
-        //        .ToListAsync();
-        //}
 
-        //// Thêm mới khuyến mãi
-    //    public async Task<PromotionResponseDTO> AddPromotionAsync(PromotionResponseDTO promotionDto)
-    //    {
-    //        var promotion = new Promotion
-    //        {
-    //            Id = promotionDto.Id,
-    //            PrValue = promotionDto.PrValue,
-    //            PrDescription = promotionDto.PrDescription,
-    //            ProductId = promotionDto.ProductId
-    //        };
+        public async Task<List<PromotionResponseDTO>> GetAllPromotionsAsync()
+        {
+            return await _context.Promotions
+                .Include(o => o.Product)
+                .Select(o => new PromotionResponseDTO
+                {
+                    Id = o.Id,
+                    ProductId = o.ProductId,
+                    PrValue = o.PrValue,
+                    PrDescription = o.PrDescription            
+                })
+                .ToListAsync();
+        }
 
-    //        _context.Promotions.Add(promotion);
-    //        await _context.SaveChangesAsync();
+        public async Task<List<PromotionResponseDTO>> GetPromotionsByProductIdAsync(string productId)
+        {
+            return await _context.Promotions
+                .Where(p => p.ProductId == productId)
+                .Select(p => new PromotionResponseDTO
+                {
+                    Id = p.Id,
+                    PrValue = p.PrValue,
+                    PrDescription = p.PrDescription,
+                    ProductId = p.ProductId
+                })
+                .ToListAsync();
+        }
 
-    //        return promotionDto;
-    //    }
+        // Thêm mới khuyến mãi
+        public async Task<PromotionResponseDTO> AddPromotionAsync(PromotionResponseDTO promotionDto)
+        {
+            var promotion = new Promotion
+            {
+                Id = promotionDto.Id,
+                PrValue = promotionDto.PrValue,
+                PrDescription = promotionDto.PrDescription,
+                ProductId = promotionDto.ProductId
+            };
 
-    //    // Cập nhật khuyến mãi
-    //    public async Task<PromotionResponseDTO?> UpdatePromotionAsync(string id, PromotionResponseDTO promotionDto)
-    //    {
-    //        var promotion = await _context.Promotions.FindAsync(id);
-    //        if (promotion == null) return null;
+            _context.Promotions.Add(promotion);
+            await _context.SaveChangesAsync();
 
-    //        promotion.PrValue = promotionDto.PrValue;
-    //        promotion.PrDescription = promotionDto.PrDescription;
-    //        promotion.ProductId = promotionDto.ProductId;
+            return promotionDto;
+        }
 
-    //        _context.Promotions.Update(promotion);
-    //        await _context.SaveChangesAsync();
+        // Cập nhật khuyến mãi
+        public async Task<PromotionResponseDTO?> UpdatePromotionAsync(string id, PromotionResponseDTO promotionDto)
+        {
+            var promotion = await _context.Promotions.FindAsync(id);
+            if (promotion == null) return null;
 
-    //        return promotionDto;
-    //    }
+            promotion.PrValue = promotionDto.PrValue;
+            promotion.PrDescription = promotionDto.PrDescription;
+            promotion.ProductId = promotionDto.ProductId;
 
-    //    // Xóa khuyến mãi
-    //    public async Task<bool> DeletePromotionAsync(string id)
-    //    {
-    //        var promotion = await _context.Promotions.FindAsync(id);
-    //        if (promotion == null) return false;
+            _context.Promotions.Update(promotion);
+            await _context.SaveChangesAsync();
 
-    //        _context.Promotions.Remove(promotion);
-    //        await _context.SaveChangesAsync();
-    //        return true;
-    //    }
+            return promotionDto;
+        }
+
+        // Xóa khuyến mãi
+        public async Task<bool> DeletePromotionAsync(string id)
+        {
+            var promotion = await _context.Promotions.FindAsync(id);
+            if (promotion == null) return false;
+
+            _context.Promotions.Remove(promotion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -68,9 +68,9 @@ const OrderDetail = () => {
     };
 
     const handleRevertOrder = () => {
-        axios.put(`http://localhost:5133/api/OrderManagement/revertorders/${orderId}`, orderDetails)
+        axios.put(`http://localhost:5133/api/OrderManagement/calculateorders/${orderId}`, orderDetails)
             .then(() => {
-                message.success('Order reverted successfully');
+                message.success('Order calculated successfully');
                 // Gọi lại fetchOrderData để cập nhật lại dữ liệu sau khi revert
                 fetchOrderData();
             })
@@ -145,7 +145,7 @@ const OrderDetail = () => {
                         onClick={handleRevertOrder}
                         className="bg-gray-300 border-gray-300 text-gray-700"
                     >
-                        Revert
+                        Calculate
                     </Button>
                     <Link to="/seller/order">
                         <Button type="default" className="bg-gray-300 border-gray-300 text-gray-700">

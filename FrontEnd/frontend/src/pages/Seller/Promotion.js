@@ -1,40 +1,57 @@
-import { Button, Input, Table } from 'antd';
-import React, { useState } from 'react';
+import { Button, Input, Table, message } from 'antd';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Promotion = () => {
-    // Sample product data
-    const [products, setProducts] = useState([
-        { key: '1', name: 'Product A', price: 100, discount: 0 },
-        { key: '2', name: 'Product B', price: 200, discount: 0 },
-    ]);
+    const [promotions, setPromotions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Handle discount change
+    useEffect(() => {
+        axios.get('http://localhost:5133/api/PromotionManagement')
+            .then((response) => {
+                console.log('Promotion data:', response.data);
+                const formattedPromotions = response.data.map((item) => ({
+                    key: item.id,
+                    id: item.id,
+                    prValue: item.prValue * 100, // Chuyển thành phần trăm
+                    prDescription: item.prDescription,
+                    productId: item.productId,
+                }));
+                setPromotions(formattedPromotions);
+                setLoading(false);
+            })
+            .catch((error) => {
+                message.error('Error loading promotions');
+                setLoading(false);
+            });
+    }, []);
+
     const handleDiscountChange = (value, key) => {
-        const updatedProducts = products.map((product) =>
-            product.key === key ? { ...product, discount: value } : product
+        const updatedPromotions = promotions.map((promotion) =>
+            promotion.key === key ? { ...promotion, prValue: value } : promotion
         );
-        setProducts(updatedProducts);
+        setPromotions(updatedPromotions);
     };
 
     const applyDiscount = (record) => {
-        const discountedPrice = record.price - (record.price * record.discount) / 100;
-        alert(`New price for ${record.name}: $${discountedPrice.toFixed(2)}`);
+        const discountedPrice = record.price - (record.price * record.prValue) / 100;
+        alert(`New price after ${record.prValue}% discount: $${discountedPrice.toFixed(2)}`);
     };
 
     const columns = [
-        { title: 'Product Name', dataIndex: 'name', key: 'name' },
-        { title: 'Original Price', dataIndex: 'price', key: 'price', render: (price) => `$${price}` },
+        { title: 'Product ID', dataIndex: 'productId', key: 'productId' },
+        { title: 'Discount (%)', dataIndex: 'prValue', key: 'prValue', render: (value) => `${value}%` },
+        { title: 'Description', dataIndex: 'prDescription', key: 'prDescription' },
         {
-            title: 'Discount (%)',
-            dataIndex: 'discount',
-            key: 'discount',
+            title: 'Adjust Discount (%)',
+            key: 'adjustDiscount',
             render: (_, record) => (
                 <Input
                     type="number"
                     min={0}
                     max={100}
-                    value={record.discount}
+                    value={record.prValue}
                     onChange={(e) => handleDiscountChange(Number(e.target.value), record.key)}
                 />
             ),
@@ -52,7 +69,6 @@ const Promotion = () => {
 
     return (
         <div className="p-6">
-            {/* Page Header */}
             <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
@@ -67,9 +83,8 @@ const Promotion = () => {
                     </Link>
                 </div>
             </div>
-            {/* Product Table */}
-            <Button type="primary">Add New Promotion</Button>
-            <Table dataSource={products} columns={columns} />
+            <Button type="primary" className="mb-4">Add New Promotion</Button>
+            <Table dataSource={promotions} columns={columns} loading={loading} />
         </div>
     );
 };
