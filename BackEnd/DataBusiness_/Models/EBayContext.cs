@@ -44,11 +44,11 @@ namespace DataBusiness_.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server =QTRUMLEE; database = Ebay; uid=sa;pwd=root;");
-            }
+            var builder = new ConfigurationBuilder()
+                               .SetBasePath(Directory.GetCurrentDirectory())
+                               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            IConfigurationRoot configuration = builder.Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyCnn"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,7 +71,6 @@ namespace DataBusiness_.Models
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.ListingId)
                     .HasConstraintName("FK__Bid__ListingId__44FF419A");
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.UserId)
@@ -103,7 +102,6 @@ namespace DataBusiness_.Models
                     .WithMany()
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("FK__CategoryL__Categ__6383C8BA");
-
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
@@ -193,7 +191,6 @@ namespace DataBusiness_.Models
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
                     .HasConstraintName("FK__ListingBi__BidId__48CFD27E");
-
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
@@ -247,7 +244,6 @@ namespace DataBusiness_.Models
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK__OrderItem__Order__3D5E1FD2");
-
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
@@ -520,7 +516,6 @@ namespace DataBusiness_.Models
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
                     .HasConstraintName("FK__UserBid__BidId__5441852A");
-
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
