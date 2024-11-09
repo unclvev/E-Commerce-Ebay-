@@ -1,46 +1,29 @@
 import { FacebookOutlined, GoogleOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import axios from 'axios'; // Đảm bảo đã cài đặt axios để gửi yêu cầu HTTP
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [otp, setOtp] = useState('');
-    const [otpRequired, setOtpRequired] = useState(false);
-    const [loading, setLoading] = useState(false); // Trạng thái loading
-    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
 
-    // Xử lý khi người dùng nhấn "Continue"
+    // Hàm xử lý đăng nhập
     const handleLogin = async () => {
-        setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5095/api/Login', { Username: username, Password: password });
-            if (response.data.jwt) {
-                // Lưu JWT vào sessionStorage
-                sessionStorage.setItem('token', response.data.jwt);
-                navigate('/');
-            } else if (response.data.otpRequired) {
-                setOtpRequired(true);
-            }
-        } catch (error) {
-            alert(error.response?.data?.message || 'Invalid username or password');
-        } finally {
-            setLoading(false);
-        }
-    };
+            // Gửi yêu cầu đăng nhập tới API
+            const response = await axios.post('http://localhost:5095/api/Login', {
+                username: username,
+                password: password
+            });
 
-    // Xử lý khi người dùng nhập OTP
-    const handleOtpCheck = async () => {
-        setLoading(true);
-        try {
-            await axios.post('http://localhost:5095/api/Otp/check-otp', { Otp: otp });
-            alert('OTP is valid! Redirecting...');
-            navigate('/');
+            // Nếu đăng nhập thành công, lưu token JWT vào localStorage hoặc cookie
+            localStorage.setItem('jwt', response.data.jwt);
+
+            // Chuyển hướng tới trang chính hoặc trang người dùng đã đăng nhập
+            window.location.href = '/';  // Điều hướng tới trang sau khi đăng nhập thành công
         } catch (error) {
-            alert(error.response?.data?.message || 'Invalid or expired OTP');
-        } finally {
-            setLoading(false);
+            setErrorMessage('Invalid username or password');
         }
     };
 
@@ -58,48 +41,29 @@ const LoginPage = () => {
                         Sign in to eBay or <a className='text-blue-600' href='/sign-up'>Create an account</a>
                     </span>
 
-                    {!otpRequired ? (
-                        <>
-                            <input
-                                type="text"
-                                placeholder="Email or username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-full mb-4"
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-full mb-4"
-                            />
-                            <button
-                                onClick={handleLogin}
-                                className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 mb-4"
-                                disabled={loading} // Disable button khi đang xử lý
-                            >
-                                {loading ? 'Logging in...' : 'Continue'}
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <input
-                                type="text"
-                                placeholder="Enter OTP"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-full mb-4"
-                            />
-                            <button
-                                onClick={handleOtpCheck}
-                                className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 mb-4"
-                                disabled={loading} // Disable button khi đang xử lý
-                            >
-                                {loading ? 'Verifying OTP...' : 'Verify OTP'}
-                            </button>
-                        </>
+                    <input
+                        type="text"
+                        placeholder="Email or username"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-full mb-4"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-full mb-4"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {errorMessage && (
+                        <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
                     )}
+                    <button
+                        onClick={handleLogin}
+                        className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 mb-4"
+                    >
+                        Continue
+                    </button>
 
                     <div className="flex items-center mb-4">
                         <div className="flex-grow border-t border-gray-300" />
