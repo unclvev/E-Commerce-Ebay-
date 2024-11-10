@@ -7,7 +7,7 @@ import axios from "axios";
 
 const { Option } = Select;
 
-const ProductDetailsPage = () => {
+export const ProductDetailsPage = () => {
     const { pid } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -30,8 +30,13 @@ const ProductDetailsPage = () => {
 
     const handleAddToCart = () => {
         // Get existing cart from localStorage or initialize it
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let cart = JSON.parse(localStorage.getItem("cart")) ;
 
+        // If the cart doesn't exist in localStorage, create it
+        if (!cart) {
+            cart = [];
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
         // Check if the product ID already exists in the cart
         if (cart.includes(pid)) {
             message.warning("This item is already in the cart.");
@@ -109,4 +114,4 @@ const ProductDetailsPage = () => {
     );
 };
 
-export default ProductDetailsPage;
+

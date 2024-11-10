@@ -2,6 +2,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Footer from './layouts/Includes/Footer';
 import Header from './layouts/Includes/Header';
+import SearchBar from './layouts/Includes/SearchBar';
+import SubHeader from './layouts/Includes/SubHeader';
 import { default as BusinessRegistrationForm, default as RegistrationForm } from './pages/Authentication/Register';
 import LoginPage from './pages/Authentication/login';
 import OtpVerification from './pages/Authentication/otp';
@@ -18,12 +20,14 @@ import ManageOrder from './pages/Seller/ManageOrder';
 import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
-
+import {ProductDetailsPage} from './pages/ProductDetails/ProductDetailsPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Header />
+      <SearchBar />
+      <SubHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/cart" element={<CartPage />} />

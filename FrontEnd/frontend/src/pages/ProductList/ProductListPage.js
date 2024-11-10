@@ -129,7 +129,6 @@ const ProductListPage = () => {
   }
 
   return (
-    <MainLayout>
       <div className="container mx-auto py-10">
         <Row gutter={16}>
           <Col xs={24} sm={6} md={6} lg={6}>
@@ -200,7 +199,7 @@ const ProductListPage = () => {
   {paginatedProducts.length > 0 ? (
     paginatedProducts.map((product, index) => (
       <Col xs={24} sm={12} md={8} key={index}>
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/products/${product.id}`}>
           <Card
             hoverable
             cover={<img alt={product.name} src={product.imageUrl} />}
@@ -244,7 +243,6 @@ const ProductListPage = () => {
           </Col>
         </Row>
       </div>
-    </MainLayout>
   );
 };
 
