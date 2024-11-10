@@ -43,11 +43,13 @@ const ProductListPage = () => {
           params: { category: category || '', keyword: keyword || '' },
         });
         const data = response.data;
-
+        console.log(data);
         if (data && data.length > 0) {
           setCategories(data);
           const products = data.flatMap((category) => category.products);
           setCurrentCategoryProducts(products);
+          console.log(products)
+          console.log(currentCategoryProducts);
           setAvailableSizes(data.flatMap((cat) => cat.availableSizes).filter(Boolean));
           setAvailableColors(data.flatMap((cat) => cat.availableColors).filter(Boolean));
           setAvailableStores(data.flatMap((cat) => cat.availableStores).filter(Boolean));
@@ -92,11 +94,11 @@ const ProductListPage = () => {
   // Áp dụng bộ lọc
   const filteredProducts = filterProducts(currentCategoryProducts);
 
-  // Phân trang sau khi đã lọc sản phẩm
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  // // Phân trang sau khi đã lọc sản phẩm
+  // const paginatedProducts = filteredProducts.slice(
+  //   (currentPage - 1) * pageSize,
+  //   currentPage * pageSize
+  // );
 
   const formatMoney = (amount) => {
     if (amount === undefined || amount === null) {
@@ -196,13 +198,18 @@ const ProductListPage = () => {
           <Col xs={24} sm={18} md={18} lg={18}>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <Row gutter={[16, 16]}>
-  {paginatedProducts.length > 0 ? (
-    paginatedProducts.map((product, index) => (
+  {currentCategoryProducts.length > 0 ? (
+    currentCategoryProducts.map((product, index) => (
       <Col xs={24} sm={12} md={8} key={index}>
         <Link to={`/products/${product.id}`}>
           <Card
             hoverable
-            cover={<img alt={product.name} src={product.imageUrl} />}
+            cover={
+              <img
+                alt={product.name}
+                src={product.imageUrl || 'http://example.com/images/default-product.jpg'} // Ảnh mặc định nếu không có ảnh
+              />
+            }
           >
             <Meta
               title={product.name}
@@ -213,14 +220,18 @@ const ProductListPage = () => {
                       {formatMoney(product.price)}
                     </span>
                     &nbsp;
-                    <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
-                      {formatMoney(product.originalPrice)}
-                    </span>
+                    {product.originalPrice > 0 && (
+                      <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
+                        {formatMoney(product.originalPrice)}
+                      </span>
+                    )}
                   </div>
-                  <p>{product.description}</p>
-                  <p style={{ color: 'green', fontWeight: 'bold' }}>
-                    Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
-                  </p>
+                  <p>{product.description || 'No description available'}</p>
+                  {product.originalPrice > 0 && (
+                    <p style={{ color: 'green', fontWeight: 'bold' }}>
+                      Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
+                    </p>
+                  )}
                 </>
               }
             />
@@ -229,9 +240,10 @@ const ProductListPage = () => {
       </Col>
     ))
   ) : (
-    !error && <Col span={24}>No products found in this category</Col>
+    <Col span={24}>No products found for this category.</Col>
   )}
 </Row>
+
 
             <Pagination
               current={currentPage}

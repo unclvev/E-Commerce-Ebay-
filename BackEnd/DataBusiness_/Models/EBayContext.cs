@@ -46,9 +46,12 @@ namespace DataBusiness_.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            optionsBuilder.UseSqlServer("server=DESKTOP-N81N3JT\\SA;database= Ebay;uid=sa;pwd=123");
 
-            if (!optionsBuilder.IsConfigured) { optionsBuilder.UseSqlServer(config.GetConnectionString("MyCnn")); }
+            //            if (!optionsBuilder.IsConfigured)
+            //{
+            //    optionsBuilder.UseSqlServer("Server=tcp:ebayapi.database.windows.net,1433;Initial Catalog=Ebay;Persist Security Info=False;User ID=prn231;Password=Passaway1@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            //}
 
         }
 
