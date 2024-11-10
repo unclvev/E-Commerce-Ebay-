@@ -19,7 +19,9 @@ import ManageOrder from './pages/Seller/ManageOrder';
 import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
-import ProductDetailsPage from './pages/ProductDetails/ProductDetailsPage'
+
+import {ProductDetailsPage} from './pages/ProductDetails/ProductDetailsPage';
+
 
 
 function App() {

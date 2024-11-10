@@ -16,7 +16,6 @@ const ProfilePage = () => {
   const [editMode, setEditMode] = useState(false);
   const [form] = Form.useForm();
 
-
   // Hàm tải thông tin người dùng từ API
   const fetchUserProfile = async () => {
     if (!userId) {
@@ -53,7 +52,7 @@ const ProfilePage = () => {
     }
   
     try {
-      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}`, values);
+      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}, values`);
       if (response.data && response.data.message) {
         message.success(response.data.message);
       }
@@ -73,6 +72,12 @@ const ProfilePage = () => {
   };
   
 
+
+  // Hàm để bật chế độ chỉnh sửa và thiết lập giá trị ban đầu của form
+  const enableEditMode = () => {
+    setEditMode(true);
+    form.setFieldsValue(user);
+  };
 
   return (
     <>
@@ -170,9 +175,4 @@ const ProfilePage = () => {
 
 
 export default ProfilePage;
-
-
-
-
-
 
