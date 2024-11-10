@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 
+
+
 const ProfilePage = () => {
   const { userId } = useParams();
   const [user, setUser] = useState({
@@ -16,12 +18,17 @@ const ProfilePage = () => {
   const [editMode, setEditMode] = useState(false);
   const [form] = Form.useForm();
 
+
+
+
   // Hàm tải thông tin người dùng từ API
   const fetchUserProfile = async () => {
     if (!userId) {
       message.error('User ID không hợp lệ.');
       return;
     }
+
+
 
 
     try {
@@ -39,9 +46,13 @@ const ProfilePage = () => {
   };
 
 
+
+
   useEffect(() => {
     fetchUserProfile();
   }, [userId]);
+
+
 
 
   const handleUpdateProfile = async (values) => {
@@ -50,9 +61,9 @@ const ProfilePage = () => {
       message.warning('Không có thay đổi nào.');
       return;
     }
-  
+
     try {
-      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}, values`);
+      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}`, values);
       if (response.data && response.data.message) {
         message.success(response.data.message);
       }
@@ -63,21 +74,18 @@ const ProfilePage = () => {
       message.error('Lỗi khi cập nhật hồ sơ. Vui lòng thử lại.');
     }
   };
-  
+
+
 
   // Hàm để bật chế độ chỉnh sửa và thiết lập giá trị ban đầu của form
   const enableEditMode = () => {
     setEditMode(true);
     form.setFieldsValue(user); // Đặt lại giá trị ban đầu của người dùng vào form
   };
-  
 
 
-  // Hàm để bật chế độ chỉnh sửa và thiết lập giá trị ban đầu của form
-  const enableEditMode = () => {
-    setEditMode(true);
-    form.setFieldsValue(user);
-  };
+
+
 
   return (
     <>
@@ -173,6 +181,4 @@ const ProfilePage = () => {
   );
 };
 
-
 export default ProfilePage;
-
