@@ -2,6 +2,7 @@ import { Button, Table, Tag, message } from 'antd';
 import axios from 'axios'; // Import axios để gọi API
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SellerNavbar from './layout/SellerNavbar';
 
 const ManageOrder = () => {
     const [orders, setOrders] = useState([]);  // Khai báo state để lưu trữ đơn hàng
@@ -73,7 +74,7 @@ const ManageOrder = () => {
     return (
         <div className="p-4">
             {/* Heading */}
-            <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
+            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
                     <Link to="/seller/product">
@@ -86,7 +87,8 @@ const ManageOrder = () => {
                         <Button>Promotions </Button>
                     </Link>
                 </div>
-            </div>
+            </div> */}
+            <SellerNavbar />
 
             {/* Order Table */}
             {/* <Button type="primary" className="mb-4">Add Order</Button> */}

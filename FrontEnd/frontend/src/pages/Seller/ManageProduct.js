@@ -2,9 +2,9 @@ import { Button, Popconfirm, Space, Table, message } from 'antd';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import AddListingModal from './include/AddListingModal'; // Import modal thêm listing
 import EditListingModal from './include/EditListingModal'; // Import modal chỉnh sửa listing
+import SellerNavbar from './layout/SellerNavbar';
 
 const ManageProducts = () => {
     const [dataSource, setDataSource] = useState([]);
@@ -100,14 +100,15 @@ const ManageProducts = () => {
 
     return (
         <div className="p-4">
-            <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
+            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
                     <Link to="/seller/order"><Button type="default">Manage Orders</Button></Link>
                     <Link to="/seller/dashboard"><Button type="default">Dashboard</Button></Link>
                     <Link to="/seller/Promotion"><Button>Promotions</Button></Link>
                 </div>
-            </div>
+            </div> */}
+            <SellerNavbar />
 
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">Product List</h2>

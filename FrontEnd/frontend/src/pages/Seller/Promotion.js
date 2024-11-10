@@ -1,7 +1,7 @@
 import { Button, Input, Table, message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import SellerNavbar from './layout/SellerNavbar';
 
 const Promotion = () => {
     const [promotions, setPromotions] = useState([]);
@@ -69,7 +69,7 @@ const Promotion = () => {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
+            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
                     <Link to="/seller/product">
@@ -82,7 +82,8 @@ const Promotion = () => {
                         <Button type="default">Dashboard</Button>
                     </Link>
                 </div>
-            </div>
+            </div> */}
+            <SellerNavbar />
             <Button type="primary" className="mb-4">Add New Promotion</Button>
             <Table dataSource={promotions} columns={columns} loading={loading} />
         </div>
