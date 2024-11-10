@@ -11,12 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\APIGateWay\APIGateWay.csproj" />
-    <ProjectReference Include="..\AuthenticationService\AuthenticationService.csproj" />
     <ProjectReference Include="..\DataBusiness_\DataBusiness_.csproj" />
-    <ProjectReference Include="..\OrderService\OrderService.csproj" />
-    <ProjectReference Include="..\PromotionService\PromotionService.csproj" />
-    <ProjectReference Include="..\ReviewService\ReviewService.csproj" />
   </ItemGroup>
 
 </Project>
