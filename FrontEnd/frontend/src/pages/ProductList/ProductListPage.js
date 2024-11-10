@@ -4,6 +4,7 @@ import { Row, Col, Card, Slider, Pagination, Checkbox } from 'antd';
 import MainLayout from '../../layouts/MainLayout';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const { Meta } = Card;
 
@@ -155,40 +156,42 @@ const ProductListPage = () => {
           <Col xs={24} sm={18} md={18} lg={18}>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <Row gutter={[16, 16]}>
-              {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((product, index) => (
-                  <Col xs={24} sm={12} md={8} key={index}>
-                    <Card
-                      hoverable
-                      cover={<img alt={product.name} src={product.imageUrl} />}
-                    >
-                      <Meta
-                        title={product.name}
-                        description={
-                          <>
-                            <div>
-                              <span style={{ color: 'red', fontWeight: 'bold' }}>
-                                {formatMoney(product.price)}
-                              </span>
-                              &nbsp;
-                              <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
-                                {formatMoney(product.originalPrice)}
-                              </span>
-                            </div>
-                            <p>{product.description}</p>
-                            <p style={{ color: 'green', fontWeight: 'bold' }}>
-                              Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
-                            </p>
-                          </>
-                        }
-                      />
-                    </Card>
-                  </Col>
-                ))
-              ) : (
-                !error && <Col span={24}>No products found in this category</Col>
-              )}
-            </Row>
+  {paginatedProducts.length > 0 ? (
+    paginatedProducts.map((product, index) => (
+      <Col xs={24} sm={12} md={8} key={index}>
+        <Link to={`/product/${product.id}`}>
+          <Card
+            hoverable
+            cover={<img alt={product.name} src={product.imageUrl} />}
+          >
+            <Meta
+              title={product.name}
+              description={
+                <>
+                  <div>
+                    <span style={{ color: 'red', fontWeight: 'bold' }}>
+                      {formatMoney(product.price)}
+                    </span>
+                    &nbsp;
+                    <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
+                      {formatMoney(product.originalPrice)}
+                    </span>
+                  </div>
+                  <p>{product.description}</p>
+                  <p style={{ color: 'green', fontWeight: 'bold' }}>
+                    Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
+                  </p>
+                </>
+              }
+            />
+          </Card>
+        </Link>
+      </Col>
+    ))
+  ) : (
+    !error && <Col span={24}>No products found in this category</Col>
+  )}
+</Row>
 
             <Pagination
               current={currentPage}
