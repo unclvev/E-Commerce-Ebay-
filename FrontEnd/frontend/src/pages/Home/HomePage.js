@@ -50,7 +50,7 @@ const HomePage = () => {
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="mb-8">
         <Carousel slides={slides} />
       </div>
@@ -78,7 +78,7 @@ const HomePage = () => {
           </Link>
         ))}
       </div>
-    </MainLayout>
+    </>
   );
 };
 

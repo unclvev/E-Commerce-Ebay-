@@ -129,7 +129,6 @@ const ProductListPage = () => {
   }
 
   return (
-    <MainLayout>
       <div className="container mx-auto py-10">
         <Row gutter={16}>
           <Col xs={24} sm={6} md={6} lg={6}>
@@ -244,7 +243,6 @@ const ProductListPage = () => {
           </Col>
         </Row>
       </div>
-    </MainLayout>
   );
 };
 
