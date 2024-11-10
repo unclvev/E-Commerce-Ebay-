@@ -21,12 +21,12 @@ const ManageProducts = () => {
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:5133/api/ProductManagement/listings');
+            const response = await axios.get('http://localhost:5134/api/ProductManagement/listings');
             const listings = response.data.map(item => ({
                 key: item.id,  // Sử dụng listingId làm key
                 name: `Product ${item.productId}`,
                 price: `$${item.currentPrice.toFixed(2)}`,
-                stock: item.startPrice === item.currentPrice ? 'In Stock' : 'Out of Stock',
+                stock: item.startPrice === item.currentPrice ? 'No discount' : 'Discount',
                 startTime: dayjs(item.startTime).format('YYYY-MM-DD HH:mm:ss'),
                 endTime: dayjs(item.endTime).format('YYYY-MM-DD HH:mm:ss'),
             }));
@@ -41,7 +41,7 @@ const ManageProducts = () => {
     const columns = [
         { title: 'Product Name', dataIndex: 'name', key: 'name' },
         { title: 'Price', dataIndex: 'price', key: 'price' },
-        { title: 'Stock', dataIndex: 'stock', key: 'stock' },
+        { title: 'Discount status', dataIndex: 'stock', key: 'stock' },
         { title: 'Start Time', dataIndex: 'startTime', key: 'startTime' },
         { title: 'End Time', dataIndex: 'endTime', key: 'endTime' },
         {
@@ -65,7 +65,7 @@ const ManageProducts = () => {
 
     const handleDelete = async (listingId) => {
         try {
-            await axios.delete(`http://localhost:5133/api/ProductManagement/listings/${listingId}`);
+            await axios.delete(`http://localhost:5134/api/ProductManagement/listings/${listingId}`);
             setDataSource(dataSource.filter(item => item.key !== listingId));
             message.success('Listing deleted successfully');
         } catch (error) {
@@ -77,7 +77,7 @@ const ManageProducts = () => {
         setIsEditMode(true);
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:5133/api/ProductManagement/listing/${listingId}`);
+            const response = await axios.get(`http://localhost:5134/api/ProductManagement/listing/${listingId}`);
             setCurrentListing(response.data);
             setIsModalVisible(true);
         } catch (error) {

@@ -9,6 +9,7 @@ import CartPage from './pages/Cart/CartPage';
 import CheckoutPage from './pages/CheckOut/CheckoutPage';
 import HomePage from './pages/Home/HomePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
+import ProductDetailsPage from './pages/ProductDetails/ProductDetailsPage';
 import ProductListPage from './pages/ProductList/ProductListPage';
 import ChangePasswordPage from './pages/Profile/ChangePasswordPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -17,8 +18,6 @@ import ManageOrder from './pages/Seller/ManageOrder';
 import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
-import StoreManagement from './pages/Seller/StoreManagement';
-import ProductDetailsPage from './pages/ProductDetails/ProductDetailsPage'
 
 
 function App() {
@@ -44,7 +43,7 @@ function App() {
 
         {/* Product Routes */}
         <Route path="/productlist" element={<ProductListPage />} />
-        <Route path="/products/:pid" element={<ProductDetailsPage />} />     
+        <Route path="/products/:pid" element={<ProductDetailsPage />} />
 
         {/* Profile Routes */}
         <Route path="/profile/:userId" element={<ProfilePage />} />

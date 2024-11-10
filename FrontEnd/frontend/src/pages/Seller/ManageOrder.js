@@ -11,7 +11,7 @@ const ManageOrder = () => {
     // Lấy dữ liệu đơn hàng từ API
     useEffect(() => {
         // Thực hiện request API để lấy dữ liệu đơn hàng
-        axios.get('http://localhost:5133/api/OrderManagement/orders')  // Thay đường dẫn với API của bạn
+        axios.get('http://localhost:5134/api/OrderManagement/orders')  // Thay đường dẫn với API của bạn
             .then((response) => {
                 console.log("", response.data);
                 setOrders(response.data);  // Lưu dữ liệu vào state orders
@@ -33,6 +33,12 @@ const ManageOrder = () => {
             render: (date) => new Date(date).toLocaleDateString(),  // Hiển thị định dạng ngày
         },
         { title: 'Shipping Address', dataIndex: 'shippingAddress', key: 'shippingAddress' },
+        {
+            title: 'Total Amount',
+            dataIndex: 'totalAmount',
+            key: 'totalAmount',
+            render: (amount) => `$${amount}`,  // Hiển thị tổng tiền
+        },
         {
             title: 'Order Status',
             dataIndex: 'orderStatus',  // Thay đổi trường để hiển thị trạng thái đơn hàng

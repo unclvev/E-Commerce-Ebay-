@@ -1,18 +1,20 @@
 import { Col, Row, Statistic, Table, message } from 'antd';
-import axios from 'axios'; // Import axios để gọi API
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import SellerNavbar from './layout/SellerNavbar';
 
 const SellerDashboard = () => {
     const [productCount, setProductCount] = useState(0);  // Số lượng sản phẩm
     const [orderCount, setOrderCount] = useState(0);  // Số lượng đơn hàng
+    const [revenue, setRevenue] = useState(0);  // Tổng doanh thu
+    const [promotionCount, setPromotionCount] = useState(0);  // Số lượng promotions
     const [dataSource, setDataSource] = useState([]);  // Danh sách sản phẩm
     const [loading, setLoading] = useState(true);  // Trạng thái tải
 
-    // Lấy số lượng sản phẩm và đơn hàng từ API
+    // Lấy số lượng sản phẩm, đơn hàng và promotions từ API
     useEffect(() => {
         // Lấy số lượng sản phẩm
-        axios.get('http://localhost:5133/api/ProductManagement/listings')
+        axios.get('http://localhost:5134/api/ProductManagement/listings')
             .then((response) => {
                 setProductCount(response.data.length);  // Cập nhật số lượng sản phẩm
                 setDataSource(response.data.map(item => ({
@@ -26,13 +28,29 @@ const SellerDashboard = () => {
                 message.error('Error loading products');
             });
 
-        // Lấy số lượng đơn hàng
-        axios.get('http://localhost:5133/api/OrderManagement/orders')
+        // Lấy số lượng đơn hàng và tính doanh thu
+        axios.get('http://localhost:5134/api/OrderManagement/orders')
             .then((response) => {
                 setOrderCount(response.data.length);  // Cập nhật số lượng đơn hàng
+
+                // Tính doanh thu cho các đơn hàng có trạng thái Delivered
+                const deliveredOrders = response.data.filter(order => order.orderStatus === 'Delivered');
+                const totalRevenue = deliveredOrders.reduce((total, order) => {
+                    return total + order.totalAmount;  // Tổng doanh thu từ các đơn hàng Delivered
+                }, 0);
+                setRevenue(totalRevenue.toFixed(2));  // Cập nhật doanh thu (Revenue)
             })
             .catch((error) => {
                 message.error('Error loading orders');
+            });
+
+        // Lấy số lượng promotions
+        axios.get('http://localhost:5134/api/PromotionManagement')
+            .then((response) => {
+                setPromotionCount(response.data.length);  // Cập nhật số lượng promotions
+            })
+            .catch((error) => {
+                message.error('Error loading promotions');
             });
 
         setLoading(false);
@@ -46,33 +64,21 @@ const SellerDashboard = () => {
 
     return (
         <div className="p-4">
-            {/* Thanh điều hướng cho seller */}
-            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
-                <div className="text-xl font-semibold">Seller Dashboard</div>
-                <div className="space-x-4">
-                    <Link to="/seller/product">
-                        <Button>Manage Products</Button>
-                    </Link>
-                    <Link to="/seller/order">
-                        <Button>Manage Orders</Button>
-                    </Link>
-                    <Link to="/seller/Promotion">
-                        <Button>Promotions</Button>
-                    </Link>
-                </div>
-            </div> */}
             <SellerNavbar />
 
-            {/* Thống kê */}
+            {/* Thống kê - Đặt tất cả trong một dòng */}
             <Row gutter={16}>
-                <Col span={8}>
-                    <Statistic title="Total Sales" value={1128} />
+                <Col span={6}>
+                    <Statistic title="Revenue" value={`$${revenue}`} />  {/* Hiển thị doanh thu */}
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <Statistic title="Orders" value={orderCount} />
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <Statistic title="Products" value={productCount} />
+                </Col>
+                <Col span={6}>
+                    <Statistic title="Promotions" value={promotionCount} />  {/* Hiển thị số lượng promotions */}
                 </Col>
             </Row>
 

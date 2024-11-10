@@ -28,7 +28,7 @@ const EditListingModal = ({ visible, onClose, listing, onUpdate }) => {
                 sellerId: listing.sellerId,
             };
 
-            await axios.put(`http://localhost:5133/api/ProductManagement/listings/${listing.id}`, updatedValues);
+            await axios.put(`http://localhost:5134/api/ProductManagement/listings/${listing.id}`, updatedValues);
             message.success('Listing updated successfully');
             onUpdate();
             onClose();
