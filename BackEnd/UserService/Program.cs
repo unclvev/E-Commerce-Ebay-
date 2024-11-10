@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EbayContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("value")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn")));
 
 var app = builder.Build();
 app.UseCors("AllowAllOrigins");

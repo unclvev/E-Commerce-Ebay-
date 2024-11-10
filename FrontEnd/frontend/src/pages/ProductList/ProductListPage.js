@@ -159,7 +159,7 @@ const ProductListPage = () => {
   {paginatedProducts.length > 0 ? (
     paginatedProducts.map((product, index) => (
       <Col xs={24} sm={12} md={8} key={index}>
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/products/${product.id}`}>
           <Card
             hoverable
             cover={<img alt={product.name} src={product.imageUrl} />}

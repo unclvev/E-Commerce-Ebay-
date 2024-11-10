@@ -2,7 +2,6 @@ import { Button, Card, Form, Input, message } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import MainLayout from "../../layouts/MainLayout"; // Đảm bảo rằng đường dẫn đúng
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -14,6 +13,7 @@ const ProfilePage = () => {
     email: ''
   });
   const [editMode, setEditMode] = useState(false);
+  const [form] = Form.useForm();
 
   // Hàm tải thông tin người dùng từ API
   const fetchUserProfile = async () => {
@@ -26,6 +26,7 @@ const ProfilePage = () => {
       const response = await axios.get(`http://localhost:5191/api/User/${userId}`);
       if (response.status === 200) {
         setUser(response.data);
+        form.setFieldsValue(response.data); // Cập nhật dữ liệu vào Form
       } else {
         message.error('Không tìm thấy hồ sơ người dùng.');
       }
@@ -42,7 +43,7 @@ const ProfilePage = () => {
   // Hàm cập nhật hồ sơ người dùng
   const handleUpdateProfile = async (values) => {
     try {
-      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}`, values);
+      const response = await axios.put(`http://localhost:5191/api/User/edit/${userId}, values`);
       if (response.data && response.data.message) {
         message.success(response.data.message);
       }
@@ -54,8 +55,14 @@ const ProfilePage = () => {
     }
   };
 
+  // Hàm để bật chế độ chỉnh sửa và thiết lập giá trị ban đầu của form
+  const enableEditMode = () => {
+    setEditMode(true);
+    form.setFieldsValue(user);
+  };
+
   return (
-    <MainLayout>
+    <>
       <div style={{ padding: '40px 0', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 130px)', display: 'flex', justifyContent: 'center' }}>
         <div style={{ width: '100%' }}>
           <Card
@@ -69,7 +76,7 @@ const ProfilePage = () => {
           >
             {editMode ? (
               <Form
-                initialValues={user}
+                form={form}
                 onFinish={handleUpdateProfile}
                 layout="vertical"
                 style={{ padding: '0 20px' }}
@@ -112,6 +119,7 @@ const ProfilePage = () => {
               </Form>
             ) : (
               <Form
+                form={form}
                 initialValues={user}
                 layout="vertical"
                 style={{ padding: '0 20px' }}
@@ -132,7 +140,7 @@ const ProfilePage = () => {
                   <Input disabled />
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" onClick={() => setEditMode(true)} style={{ marginRight: '10px' }}>
+                  <Button type="primary" onClick={enableEditMode} style={{ marginRight: '10px' }}>
                     Chỉnh sửa Hồ Sơ
                   </Button>
                   <br />
@@ -143,8 +151,9 @@ const ProfilePage = () => {
           </Card>
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 };
 
 export default ProfilePage;
+
