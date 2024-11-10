@@ -17,6 +17,52 @@ namespace SellerService.Repository
         }
 
 //ProductManagement
+
+        //Create product
+        public async Task<ProductResponseDTO> CreateProductAsync(ProductResponseDTO dto)
+        {
+            // Tính số lượng sản phẩm hiện có để xác định Id mới
+            int productCount = await _context.Products.CountAsync();
+            dto.Id = (productCount + 1).ToString(); // Chuyển đổi thành chuỗi nếu Id là kiểu string
+
+            Product product = new Product
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                Price = dto.Price,
+                OriginalPrice = dto.OriginalPrice,
+                SaleStartDate = dto.SaleStartDate,
+                SaleEndDate = dto.SaleEndDate,
+                StockQuantity = dto.StockQuantity
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return dto;
+        }
+        //delete product
+        public async Task<ProductResponseDTO?> DeleteProductAsync(string id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return null;
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return new ProductResponseDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                OriginalPrice = product.OriginalPrice,
+                SaleStartDate = product.SaleStartDate,
+                SaleEndDate = product.SaleEndDate,
+                StockQuantity = product.StockQuantity
+            };
+        }
         // Get all Seller Listings
         public async Task<List<SellerListingResponseDTO>> GetAllSellerListingsAsync()
         {
@@ -65,16 +111,21 @@ namespace SellerService.Repository
         }
 
         // Add new Seller Listing with Product check
-        public async Task<SellerListingResponseDTO> CreateSellerListingAsync(SellerListingResponseDTO dto)
+        public async Task<SellerListingResponseDTO> CreateSellerListingAsync(SellerListingResponseDTO dto, ProductResponseDTO product)
         {
-            // Tính số lượng sản phẩm hiện có để xác định Id mới
+            // Thêm sản phẩm vào database và lấy product Id
+            var createdProduct = await CreateProductAsync(product);
+            dto.ProductId = createdProduct.Id; // Thiết lập ProductId trong DTO
+
+            // Tạo Id cho listing
             int listingCount = await _context.Listings.CountAsync();
             dto.Id = (listingCount + 1).ToString(); // Chuyển đổi thành chuỗi nếu Id là kiểu string
 
+            // Tạo mới listing với ProductId của product đã được thêm vào
             Listing listing = new Listing
             {
                 Id = dto.Id,
-                ProductId = dto.ProductId,
+                ProductId = createdProduct.Id, // Sử dụng Id của Product vừa được tạo
                 SellerId = dto.SellerId,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
@@ -83,11 +134,13 @@ namespace SellerService.Repository
                 CategoryId = dto.CategoryId
             };
 
+            // Thêm listing vào database
             _context.Listings.Add(listing);
             await _context.SaveChangesAsync();
 
             return dto;
         }
+
 
 
 
@@ -98,7 +151,6 @@ namespace SellerService.Repository
             if (listing == null) return null;
 
             // Cập nhật thông tin Listing
-            listing.SellerId = dto.SellerId;
             listing.StartTime = dto.StartTime;
             listing.EndTime = dto.EndTime;
             listing.StartPrice = dto.StartPrice;
@@ -137,10 +189,9 @@ namespace SellerService.Repository
             };
 
             _context.Listings.Remove(listing);
-
             // Lưu thay đổi vào cơ sở dữ liệu
             await _context.SaveChangesAsync();
-
+            DeleteProductAsync(deletedListingDTO.ProductId);
             // Trả về DTO của Listing đã xóa
             return deletedListingDTO;
         }
