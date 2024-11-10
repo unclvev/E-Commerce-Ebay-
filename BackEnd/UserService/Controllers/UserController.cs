@@ -65,6 +65,19 @@ namespace UserService.Controllers
 
             return Ok(userDTO);
         }
+        // Hiển thị hồ sơ người dùng
+        [HttpGet("/email/{email}")]
+        public async Task<IActionResult> GetUserProfileByEmail(string email)
+        {
+            var user = _context.Users.Where(u => u.Email == email).FirstOrDefault();
+            if (user == null)
+                return NotFound(new { message = "User not found" });
+
+            // Chỉ trả về các thông tin cơ bản của người dùng
+
+
+            return Ok(user.Id);
+        }
 
         // Cập nhật thông tin cá nhân của người dùng
         [HttpPut("edit/{id}")]

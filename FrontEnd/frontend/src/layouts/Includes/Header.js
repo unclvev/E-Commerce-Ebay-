@@ -1,3 +1,5 @@
+import { message } from 'antd';
+import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; // sửa lại import cho đúng
 import React, { useEffect, useState } from 'react';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
@@ -8,20 +10,35 @@ function Header() {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setUser({
-                    email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
-                });
+                const email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+                setUser({ email });
+
+                // Gọi API chỉ khi user.email đã có giá trị
+                if (email) {
+                    axios.get(`http://localhost:5191/email/${email}`)
+                        .then((response) => {
+                            console.log("UserId response:", response.data);
+                            setUserId(response.data);  // Lưu userId vào state
+                            setLoading(false);  // Dừng trạng thái tải
+                        })
+                        .catch((error) => {
+                            message.error('Error loading user data');
+                            setLoading(false);  // Dừng trạng thái tải khi có lỗi
+                        });
+                }
             } catch (error) {
                 console.error("Invalid JWT", error);
             }
         }
-    }, []);
+    }, []); // chỉ chạy 1 lần khi component mount
 
     const toggleDropdown = () => {
         setDropdownVisible(!isDropdownVisible);
@@ -85,7 +102,7 @@ function Header() {
                                     <div className="border-b" />
                                     <ul className="bg-white">
                                         <li className='text-[11px] py-2 px-4 w-full hover:underline text-blue-500 hover:text-blue-600 cursor-pointer'>
-                                            <Link to='/orders'>My Orders</Link>
+                                            <Link to={`/profile/${userId}`}>My Profile</Link>
                                         </li>
                                         <li className='text-[11px] py-2 px-4 w-full hover:underline text-blue-500 hover:text-blue-600 cursor-pointer'>
                                             <button onClick={handleLogout}>Sign Out</button>
