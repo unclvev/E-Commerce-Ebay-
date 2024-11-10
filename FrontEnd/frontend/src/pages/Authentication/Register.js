@@ -1,7 +1,7 @@
 import { Button, Card, Input, Modal, message } from 'antd';
 import axios from 'axios'; // Đảm bảo đã cài axios để gửi yêu cầu HTTP
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, touched }) => (
   <>
@@ -94,6 +94,7 @@ const RegistrationForm = () => {
   const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);  // Hiển thị modal nhập OTP
   const [otp, setOtp] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');  // OTP từ server
+  const navigate = useNavigate(); // Hook để điều hướng trang mới
 
   useEffect(() => {
     validateForm();
@@ -129,9 +130,11 @@ const RegistrationForm = () => {
     if (isFormValid) {
       try {
         // Gửi yêu cầu đăng ký tới backend để nhận OTP
-        const response = await axios.post('http://localhost:5095/api/Register', formData);
+        const response = await axios.post('http://localhost:5095/api/Register', formData, { withCredentials: true });
+        
         setGeneratedOtp(response.data.otp); // Lưu OTP nhận được từ server
         setIsOtpModalVisible(true);  // Mở modal nhập OTP
+        
       } catch (error) {
         console.error('Error registering user:', error);
         message.error('Failed to register user');
@@ -142,10 +145,13 @@ const RegistrationForm = () => {
   const handleOtpSubmit = async () => {
     try {
       // Gửi OTP người dùng nhập vào để kiểm tra
-      const response = await axios.post('http://localhost:5095/api/Otp/check-otp', { otp });
+      const response = await axios.post('http://localhost:5095/api/Otp/check-otp', { otp }, { withCredentials: true });
       if (response.status === 200) {
         message.success('OTP verified successfully');
-        // Tiến hành các bước tiếp theo sau khi xác thực OTP thành công
+        
+        // Chuyển hướng sang trang khác sau khi OTP hợp lệ
+        navigate('/sign-in'); // Đổi '/welcome' thành đường dẫn trang bạn muốn chuyển đến
+        
       }
     } catch (error) {
       message.error('Invalid OTP');

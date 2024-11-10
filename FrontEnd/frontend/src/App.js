@@ -18,7 +18,7 @@ import ManageProducts from './pages/Seller/ManageProduct';
 import OrderDetail from './pages/Seller/OrderDetail';
 import Promotion from './pages/Seller/Promotion';
 import StoreManagement from './pages/Seller/StoreManagement';
-
+import OtpVerification from './pages/Authentication/otp';
 import ChangePasswordPage from './pages/Profile/ChangePasswordPage'; 
 
 
@@ -42,6 +42,7 @@ function App() {
         <Route path='/productlist' element={<ProductListPage />} />
         <Route path='/products' element={<ProductDetailsPage />} />
         <Route path='/seller/order/:orderId' element={<OrderDetail />} />
+        <Route path='/otp' element={<OtpVerification />} />
         {/* Add the route for the ProfilePage */}
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="/change-password/:userId" element={<ChangePasswordPage />} />

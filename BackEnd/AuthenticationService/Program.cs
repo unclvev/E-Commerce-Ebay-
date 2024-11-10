@@ -11,14 +11,35 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
-        builder.AllowAnyOrigin()  // Cho phép tất cả các nguồn
-               .AllowAnyMethod()  // Cho phép tất cả các phương thức HTTP (GET, POST, PUT, DELETE, v.v.)
+        builder.WithOrigins("http://localhost:3000")  // Chỉ định frontend cụ thể
+               .AllowCredentials()  // Cho phép gửi cookies, header xác thực
+               .AllowAnyMethod()  // Cho phép tất cả các phương thức HTTP
                .AllowAnyHeader());  // Cho phép tất cả các header
 });
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EbayContext>();
+
+
+// Thêm dịch vụ session
+builder.Services.AddDistributedMemoryCache();
+
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = "localhost:5095";
+//    options.InstanceName = "SampleInstance";
+//});
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10); // Thời gian hết hạn cho session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None; // Cho phép cookies cross-origin
+});
 
 // Add JWT configuration
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -42,6 +63,7 @@ builder.Services.AddScoped<PasswordHandler>();
 builder.Services.AddScoped<Email>();    
 var app = builder.Build();
 app.UseCors("AllowAllOrigins");
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
