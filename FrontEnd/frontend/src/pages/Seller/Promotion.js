@@ -1,4 +1,4 @@
-import { Button, Input, Table, message } from 'antd';
+import { Button, Form, Input, message, Modal, Table } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import SellerNavbar from './layout/SellerNavbar';
@@ -6,26 +6,30 @@ import SellerNavbar from './layout/SellerNavbar';
 const Promotion = () => {
     const [promotions, setPromotions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [form] = Form.useForm();
 
     useEffect(() => {
-        axios.get('http://localhost:5133/api/PromotionManagement')
-            .then((response) => {
-                console.log('Promotion data:', response.data);
-                const formattedPromotions = response.data.map((item) => ({
-                    key: item.id,
-                    id: item.id,
-                    prValue: item.prValue * 100, // Chuyển thành phần trăm
-                    prDescription: item.prDescription,
-                    productId: item.productId,
-                }));
-                setPromotions(formattedPromotions);
-                setLoading(false);
-            })
-            .catch((error) => {
-                message.error('Error loading promotions');
-                setLoading(false);
-            });
+        fetchPromotions();
     }, []);
+
+    const fetchPromotions = async () => {
+        try {
+            const response = await axios.get('http://localhost:5134/api/PromotionManagement');
+            const formattedPromotions = response.data.map((item) => ({
+                key: item.id,
+                id: item.id,
+                prValue: item.prValue * 100, // Convert to percentage
+                prDescription: item.prDescription,
+                productId: item.productId,
+            }));
+            setPromotions(formattedPromotions);
+            setLoading(false);
+        } catch (error) {
+            message.error('Error loading promotions');
+            setLoading(false);
+        }
+    };
 
     const handleDiscountChange = (value, key) => {
         const updatedPromotions = promotions.map((promotion) =>
@@ -34,9 +38,64 @@ const Promotion = () => {
         setPromotions(updatedPromotions);
     };
 
-    const applyDiscount = (record) => {
-        const discountedPrice = record.price - (record.price * record.prValue) / 100;
-        alert(`New price after ${record.prValue}% discount: $${discountedPrice.toFixed(2)}`);
+    const applyDiscount = async (record) => {
+        try {
+            const response = await axios.get(`http://localhost:5134/api/ProductManagement/listing/product/${record.productId}`);
+            const product = response.data;
+            const discountedPrice = product.currentPrice * (1 - record.prValue / 100);
+            alert(`New price after ${record.prValue}% discount: $${discountedPrice.toFixed(2)}`);
+
+
+            await axios.put(`http://localhost:5134/api/ProductManagement/listings/${product.id}`, {
+                id: product.id,
+                productId: product.productId,
+                sellerId: product.sellerId,
+                startTime: product.startTime,
+                endTime: product.endTime,
+                startPrice: product.startPrice,
+                currentPrice: discountedPrice,
+                categoryId: product.categoryId
+            });
+            message.success('Price updated successfully');
+            // Cập nhật lại danh sách promotion
+            setPromotions(promotions.map(promo =>
+                promo.key === record.key ? { ...promo, currentPrice: discountedPrice } : promo
+            ));
+        } catch (error) {
+            message.error('Failed to update listing with new price');
+        }
+    };
+
+    const showAddPromotionModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleAddPromotion = async (values) => {
+        try {
+            const newPromotion = {
+                id: '',
+                prValue: values.prValue / 100, // Convert back to decimal
+                prDescription: values.prDescription,
+                productId: values.productId,
+            };
+            await axios.post('http://localhost:5134/api/PromotionManagement', newPromotion);
+            message.success('Promotion added successfully');
+            setIsModalVisible(false);
+            form.resetFields();
+            fetchPromotions();
+        } catch (error) {
+            message.error('Failed to add promotion');
+        }
+    };
+
+    const handleDeletePromotion = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5134/api/PromotionManagement/${id}`);
+            message.success('Promotion deleted successfully');
+            setPromotions(promotions.filter((promo) => promo.id !== id));
+        } catch (error) {
+            message.error('Failed to delete promotion');
+        }
     };
 
     const columns = [
@@ -60,32 +119,46 @@ const Promotion = () => {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <Button type="primary" onClick={() => applyDiscount(record)}>
-                    Apply Discount
-                </Button>
+                <div className="flex space-x-2">
+                    <Button type="primary" onClick={() => applyDiscount(record)}>
+                        Apply Discount
+                    </Button>
+                    <Button type="danger" onClick={() => handleDeletePromotion(record.id)}>
+                        Delete
+                    </Button>
+                </div>
             ),
         },
     ];
 
     return (
         <div className="p-6">
-            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
-                <div className="text-xl font-semibold">Seller Dashboard</div>
-                <div className="space-x-4">
-                    <Link to="/seller/product">
-                        <Button type="default">Manage Products</Button>
-                    </Link>
-                    <Link to="/seller/order">
-                        <Button type="default">Manage Orders</Button>
-                    </Link>
-                    <Link to="/seller/dashboard">
-                        <Button type="default">Dashboard</Button>
-                    </Link>
-                </div>
-            </div> */}
             <SellerNavbar />
-            <Button type="primary" className="mb-4">Add New Promotion</Button>
+            <Button type="primary" className="mb-4" onClick={showAddPromotionModal}>Add New Promotion</Button>
             <Table dataSource={promotions} columns={columns} loading={loading} />
+
+            <Modal
+                title="Add New Promotion"
+                visible={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={null}
+            >
+                <Form form={form} onFinish={handleAddPromotion}>
+                    <Form.Item label="Discount (%)" name="prValue" rules={[{ required: true, message: 'Please enter a discount value' }]}>
+                        <Input type="number" min={0} max={100} placeholder="Enter discount percentage" />
+                    </Form.Item>
+                    <Form.Item label="Description" name="prDescription" rules={[{ required: true, message: 'Please enter a description' }]}>
+                        <Input placeholder="Enter promotion description" />
+                    </Form.Item>
+                    <Form.Item label="Product ID" name="productId" rules={[{ required: true, message: 'Please enter the product ID' }]}>
+                        <Input placeholder="Enter product ID" />
+                    </Form.Item>
+                    <div className="flex justify-end space-x-4">
+                        <Button onClick={() => setIsModalVisible(false)}>Cancel</Button>
+                        <Button type="primary" htmlType="submit">Add Promotion</Button>
+                    </div>
+                </Form>
+            </Modal>
         </div>
     );
 };

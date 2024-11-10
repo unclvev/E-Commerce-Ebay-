@@ -12,6 +12,10 @@ namespace SellerService.DAO
             this._sellerRepository = sellerRepository;
         }
         //Product
+        public async Task<ProductResponseDTO?> GetProductByIdAsync(string id)
+        {
+            return await _sellerRepository.GetProductByIdAsync(id);
+        }
         public async Task<ProductResponseDTO?> CreateProductAsync(ProductResponseDTO product)
         {
             return await _sellerRepository.CreateProductAsync(product);
@@ -44,11 +48,14 @@ namespace SellerService.DAO
         {
             return await _sellerRepository.DeleteSellerListingAsync(id);
         }
-        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerId)
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerEmailAsync(string sellerEmail)
         {
-            return await _sellerRepository.GetListingsBySellerIdAsync(sellerId);
+            return await _sellerRepository.GetListingsBySellerEmailAsync(sellerEmail);
         }
-
+        public async Task<SellerListingResponseDTO> GetListingByProductIdAsync(string productId)
+        {
+            return await _sellerRepository.GetListingByProductIdAsync(productId);
+        }
         //ManageOrders
         public async Task<List<OrderResponseDTO>> GetAllOrdersAsync()
         {

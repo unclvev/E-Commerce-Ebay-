@@ -17,7 +17,24 @@ namespace SellerService.Repository
         }
 
 //ProductManagement
+        // Get Product by ID
+        public async Task<ProductResponseDTO?> GetProductByIdAsync(string id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return null;
 
+            return new ProductResponseDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                OriginalPrice = product.OriginalPrice,
+                SaleStartDate = product.SaleStartDate,
+                SaleEndDate = product.SaleEndDate,
+                StockQuantity = product.StockQuantity
+            };
+        }
         //Create product
         public async Task<ProductResponseDTO> CreateProductAsync(ProductResponseDTO dto)
         {
@@ -195,8 +212,13 @@ namespace SellerService.Repository
             // Trả về DTO của Listing đã xóa
             return deletedListingDTO;
         }
-        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerId)
+        //get by seller email
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerEmailAsync(string sellerEmail)
         {
+            var sellerId = await _context.Users
+                .Where(s => s.Email == sellerEmail)
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync();
             return await _context.Listings
                 .Where(l => l.SellerId == sellerId)
                 .Select(l => new SellerListingResponseDTO
@@ -211,6 +233,23 @@ namespace SellerService.Repository
                     CategoryId = l.CategoryId
                 })
                 .ToListAsync();
+        }
+        //get by productId
+        public async Task<SellerListingResponseDTO> GetListingByProductIdAsync(string productId)
+        {
+            var listing = await _context.Listings.FirstOrDefaultAsync(o => o.ProductId == productId);
+            if (listing == null) return null;
+            return new SellerListingResponseDTO
+            {
+                Id = listing.Id,
+                ProductId = listing.ProductId,
+                SellerId = listing.SellerId,
+                StartTime = listing.StartTime,
+                EndTime = listing.EndTime,
+                StartPrice = listing.StartPrice,
+                CurrentPrice = listing.CurrentPrice,
+                CategoryId = listing.CategoryId
+            };
         }
 //OrderManagement
         public async Task<List<OrderResponseDTO>> GetAllOrdersAsync()
@@ -358,9 +397,12 @@ namespace SellerService.Repository
         // Thêm mới khuyến mãi
         public async Task<PromotionResponseDTO> AddPromotionAsync(PromotionResponseDTO promotionDto)
         {
+            //lấy id cao nhất
+            int promotionCount = await _context.Promotions.CountAsync();
+            promotionDto.Id = (promotionCount + 1).ToString();
             var promotion = new Promotion
             {
-                Id = promotionDto.Id,
+                Id = (promotionCount + 1).ToString(),
                 PrValue = promotionDto.PrValue,
                 PrDescription = promotionDto.PrDescription,
                 ProductId = promotionDto.ProductId
@@ -393,6 +435,12 @@ namespace SellerService.Repository
         {
             var promotion = await _context.Promotions.FindAsync(id);
             if (promotion == null) return false;
+            var targetListing = await _context.Listings.FirstOrDefaultAsync(l => l.ProductId == promotion.ProductId);
+            if (targetListing != null)
+            {
+                targetListing.CurrentPrice = targetListing.StartPrice;
+                _context.Listings.Update(targetListing);
+            }
 
             _context.Promotions.Remove(promotion);
             await _context.SaveChangesAsync();

@@ -30,7 +30,7 @@ const AddListingModal = ({ visible, onClose }) => {
         };
 
         try {
-            const response = await axios.post('http://localhost:5133/api/ProductManagement/listings', listingData);
+            const response = await axios.post('http://localhost:5134/api/ProductManagement/listings', listingData);
             console.log('Listing added successfully:', response.data);
             onClose();
             form.resetFields();

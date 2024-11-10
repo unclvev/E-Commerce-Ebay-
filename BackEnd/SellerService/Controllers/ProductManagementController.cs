@@ -16,7 +16,19 @@ namespace SellerService.Controllers
         {
             _sellerDAO = sellerDAO ?? throw new ArgumentNullException(nameof(sellerDAO));
         }
+        //Product
+        [HttpGet("product/{id}")]
+        public async Task<IActionResult> GetProductById(string id)
+        {
+            var product = await _sellerDAO.GetProductByIdAsync(id);
 
+            if (product == null)
+            {
+                return NotFound($"Product with ID: {id} not found");
+            }
+
+            return Ok(product);
+        }
         // Get all Seller Listings
         [HttpGet("listings")]
         public async Task<ActionResult<List<SellerListingResponseDTO>>> GetAllSellerListings()
@@ -74,17 +86,31 @@ namespace SellerService.Controllers
             }
             return Ok(deletedListing);
         }
+        //Get Listings by Seller email
         [HttpGet("listings/{sellerId}")]
-        public async Task<IActionResult> GetListingsBySellerId(string sellerId)
+        public async Task<IActionResult> GetListingsBySellerId(string sellerEmail)
         {
-            var listings = await _sellerDAO.GetListingsBySellerIdAsync(sellerId);
+            var listings = await _sellerDAO.GetListingsBySellerEmailAsync(sellerEmail);
 
             if (listings == null || !listings.Any())
             {
-                return NotFound($"No listings found for seller with ID: {sellerId}");
+                return NotFound($"No listings found for seller with email: {sellerEmail}");
             }
 
             return Ok(listings);
+        }
+        //Get Listing by Product ID
+        [HttpGet("listing/product/{productId}")]
+        public async Task<IActionResult> GetListingByProductId(string productId)
+        {
+            var listing = await _sellerDAO.GetListingByProductIdAsync(productId);
+
+            if (listing == null)
+            {
+                return NotFound($"Listing with product ID: {productId} not found");
+            }
+
+            return Ok(listing);
         }
     }
 }

@@ -25,7 +25,7 @@ const OrderDetail = () => {
         setLoading(true);
 
         // Lấy dữ liệu đơn hàng
-        axios.get(`http://localhost:5133/api/OrderManagement/orders/${orderId}`)
+        axios.get(`http://localhost:5134/api/OrderManagement/orders/${orderId}`)
             .then(response => {
                 setOrderDetails(response.data);
             })
@@ -34,7 +34,7 @@ const OrderDetail = () => {
             });
 
         // Lấy dữ liệu OrderItems
-        axios.get(`http://localhost:5133/api/OrderManagement/orders/${orderId}/items`)
+        axios.get(`http://localhost:5134/api/OrderManagement/orders/${orderId}/items`)
             .then(response => {
                 setOrderItems(response.data);
                 setLoading(false);
@@ -61,7 +61,7 @@ const OrderDetail = () => {
             updatedOrder.orderStatus = 'Pending';
         }
 
-        axios.put(`http://localhost:5133/api/OrderManagement/orders/${orderId}`, updatedOrder)
+        axios.put(`http://localhost:5134/api/OrderManagement/orders/${orderId}`, updatedOrder)
             .then(() => {
                 message.success('Order status updated successfully');
                 navigate('/seller/order');
@@ -72,7 +72,7 @@ const OrderDetail = () => {
     };
 
     const handleRevertOrder = () => {
-        axios.put(`http://localhost:5133/api/OrderManagement/calculateorders/${orderId}`, orderDetails)
+        axios.put(`http://localhost:5134/api/OrderManagement/calculateorders/${orderId}`, orderDetails)
             .then(() => {
                 message.success('Order calculated successfully');
                 // Gọi lại fetchOrderData để cập nhật lại dữ liệu sau khi revert
