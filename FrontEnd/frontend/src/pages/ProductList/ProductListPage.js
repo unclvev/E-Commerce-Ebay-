@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Row, Col, Card, Slider, Pagination, Checkbox } from 'antd';
 import MainLayout from '../../layouts/MainLayout';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 const { Meta } = Card;
 
