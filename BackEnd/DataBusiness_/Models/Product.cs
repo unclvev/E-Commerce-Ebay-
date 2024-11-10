@@ -14,6 +14,9 @@ namespace DataBusiness_.Models
             ProductVariations = new HashSet<ProductVariation>();
             Promotions = new HashSet<Promotion>();
             Reviews = new HashSet<Review>();
+            Colors = new HashSet<Color>();
+            Sizes = new HashSet<Size>();
+            Stores = new HashSet<Store>();
         }
 
         public string Id { get; set; } = null!;
@@ -32,5 +35,9 @@ namespace DataBusiness_.Models
         public virtual ICollection<ProductVariation> ProductVariations { get; set; }
         public virtual ICollection<Promotion> Promotions { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
+
+        public virtual ICollection<Color> Colors { get; set; }
+        public virtual ICollection<Size> Sizes { get; set; }
+        public virtual ICollection<Store> Stores { get; set; }
     }
 }

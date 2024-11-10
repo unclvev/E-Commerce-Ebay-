@@ -9,9 +9,9 @@ namespace SellerService.Repository
 {
     public class SellerRepository
     {
-        private readonly EBayContext _context;
+        private readonly EbayContext _context;
 
-        public SellerRepository(EBayContext context)
+        public SellerRepository(EbayContext context)
         {
             _context = context;
         }

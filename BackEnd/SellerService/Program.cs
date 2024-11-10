@@ -21,7 +21,7 @@ public class Program
                        .AllowAnyHeader());  // Cho phép tất cả các header
         });
         builder.Services.AddControllers();
-        builder.Services.AddDbContext<EBayContext>(options =>
+        builder.Services.AddDbContext<EbayContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("MyCnn"));
         });

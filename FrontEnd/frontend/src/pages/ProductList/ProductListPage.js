@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+// src/pages/ProductList/ProductListPage.js
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Row, Col, Card, Checkbox, Slider, Pagination } from 'antd';
+import axios from 'axios'; // Import axios
 import MainLayout from '../../layouts/MainLayout';
 
 const { Meta } = Card;
@@ -7,7 +10,35 @@ const { Meta } = Card;
 const ProductListPage = () => {
   const [priceRange, setPriceRange] = useState([100000, 500000]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [availableSizes, setAvailableSizes] = useState([]);
+  const [availableColors, setAvailableColors] = useState([]);
+  const [categoryId, setCategoryId] = useState(null);
+  const { categoryId: categoryParam } = useParams();
   const pageSize = 9;
+
+  useEffect(() => {
+    if (categoryParam) {
+      setCategoryId(categoryParam);
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Cứng categoryId = 2
+        const response = await axios.get('http://localhost:5003/api/Product/category/2');
+        console.log("API Response:", response.data); 
+        setAvailableSizes(response.data.availableSizes);
+        setAvailableColors(response.data.availableColors);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []); 
+  
+
   const products = [
     {
       id: 1,
@@ -38,12 +69,15 @@ const ProductListPage = () => {
       image: 'https://www.tatgolf.vn/media/catalog/product/cache/4b8a26fd3678cf71135a0bf838b897de/a/_/a_o_ngan_tay_lecoq_qgmvja03v_nv02_.jpg',
     },
   ];
+
   const formatMoney = (amount) => {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
+
   const calculateDiscountPercentage = (price, originalPrice) => {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
   };
+
   const paginatedProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
@@ -68,24 +102,32 @@ const ProductListPage = () => {
               <div className="mb-4">
                 <h3 className="text-md font-semibold">Size</h3>
                 <Checkbox.Group>
-                  <Checkbox value="S">Small</Checkbox>
-                  <Checkbox value="M">Medium</Checkbox>
-                  <Checkbox value="L">Large</Checkbox>
+                  {availableSizes.length > 0 ? (
+                    availableSizes.map((size) => (
+                      <Checkbox key={size} value={size}>{size}</Checkbox>
+                    ))
+                  ) : (
+                    <p>No sizes available</p>
+                  )}
                 </Checkbox.Group>
               </div>
 
               <div className="mb-4">
                 <h3 className="text-md font-semibold">Color</h3>
                 <Checkbox.Group>
-                  <Checkbox value="Black">Black</Checkbox>
-                  <Checkbox value="White">White</Checkbox>
-                  <Checkbox value="Red">Red</Checkbox>
+                  {availableColors.length > 0 ? (
+                    availableColors.map((color) => (
+                      <Checkbox key={color} value={color}>{color}</Checkbox>
+                    ))
+                  ) : (
+                    <p>No colors available</p>
+                  )}
                 </Checkbox.Group>
               </div>
+
             </div>
           </Col>
 
-          {/* Cột bên phải chứa danh sách sản phẩm */}
           <Col xs={24} sm={18} md={18} lg={18}>
             <Row gutter={[16, 16]}>
               {paginatedProducts.map((product) => (

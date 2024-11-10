@@ -11,9 +11,9 @@ namespace UserService.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly EBayContext _context;
+        private readonly EbayContext _context;
 
-        public UserController(EBayContext context)
+        public UserController(EbayContext context)
         {
             _context = context;
         }

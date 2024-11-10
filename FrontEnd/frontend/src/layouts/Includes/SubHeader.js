@@ -8,7 +8,7 @@ export default function SubHeader() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://localhost:5003/api/product/categories');
-        console.log(response.data);  // Log dữ liệu API ra console
+        console.log("Aha bên subheader" + response.data);  // Log dữ liệu API ra console
         setCategories(response.data);  // Lưu dữ liệu categories vào state
       } catch (error) {
         console.error('Error fetching categories:', error);
