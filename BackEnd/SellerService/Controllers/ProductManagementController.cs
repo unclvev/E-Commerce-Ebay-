@@ -39,13 +39,17 @@ namespace SellerService.Controllers
             return Ok(listing);
         }
 
-        // Add new Seller Listing
         [HttpPost("listings")]
-        public async Task<ActionResult<SellerListingResponseDTO>> AddSellerListing(SellerListingResponseDTO dto)
+        public async Task<ActionResult<SellerListingResponseDTO>> AddSellerListing([FromBody] SellerListingWithProductDTO dto)
         {
-            var newListing = await _sellerDAO.CreateSellerListingAsync(dto);
+            var newListing = await _sellerDAO.CreateSellerListingAsync(dto.SellerListing, dto.Product);
+            if (newListing == null)
+            {
+                return BadRequest("Failed to create listing or product.");
+            }
             return CreatedAtAction(nameof(GetSellerListingById), new { id = newListing.Id }, newListing);
         }
+
 
         // Update existing Seller Listing
         [HttpPut("listings/{id}")]

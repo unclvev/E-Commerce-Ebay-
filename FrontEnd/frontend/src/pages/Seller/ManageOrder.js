@@ -33,23 +33,25 @@ const ManageOrder = () => {
         },
         { title: 'Shipping Address', dataIndex: 'shippingAddress', key: 'shippingAddress' },
         {
-            title: 'Total Amount',
-            dataIndex: 'totalAmount',
-            key: 'totalAmount',
-            render: (totalAmount, record) => {
-                const status = record.shippingAddress === null
-                    ? 'Delivered'
-                    : record.totalAmount === null
-                        ? 'Shipping'
-                        : null;
-                return (
-                    <div>
-                        {totalAmount !== null ? `$${totalAmount.toFixed(2)}` : 'Paid'}
-                        <Tag color={status === 'Delivered' ? 'green' : 'orange'}>
-                            {status || 'Pending'}
-                        </Tag>
-                    </div>
-                );
+            title: 'Order Status',
+            dataIndex: 'orderStatus',  // Thay đổi trường để hiển thị trạng thái đơn hàng
+            key: 'orderStatus',
+            render: (orderStatus) => {
+                let color;
+                switch (orderStatus) {
+                    case 'Pending':
+                        color = 'yellow';
+                        break;
+                    case 'Shipping':
+                        color = 'orange';
+                        break;
+                    case 'Delivered':
+                        color = 'green';
+                        break;
+                    default:
+                        color = 'gray';
+                }
+                return <Tag color={color}>{orderStatus}</Tag>;  // Hiển thị trạng thái với màu tương ứng
             },
         },
         {
@@ -87,7 +89,7 @@ const ManageOrder = () => {
             </div>
 
             {/* Order Table */}
-            <Button type="primary" className="mb-4">Add Order</Button>
+            {/* <Button type="primary" className="mb-4">Add Order</Button> */}
             <Table
                 dataSource={orders}  // Dữ liệu từ API
                 columns={columns}

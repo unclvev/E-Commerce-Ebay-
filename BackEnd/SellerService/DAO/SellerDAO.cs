@@ -6,12 +6,21 @@ namespace SellerService.DAO
 {
     public class SellerDAO
     {
-        //List
         private readonly SellerRepository _sellerRepository;
         public SellerDAO(SellerRepository sellerRepository)
         {
             this._sellerRepository = sellerRepository;
         }
+        //Product
+        public async Task<ProductResponseDTO?> CreateProductAsync(ProductResponseDTO product)
+        {
+            return await _sellerRepository.CreateProductAsync(product);
+        }
+        public async Task<ProductResponseDTO?> DeleteProductAsync(string id)
+        {
+            return await _sellerRepository.DeleteProductAsync(id);
+        }
+        //List
         public async Task<List<SellerListingResponseDTO>> GetAllSellerListingsAsync()
         {
             return await _sellerRepository.GetAllSellerListingsAsync();
@@ -20,10 +29,13 @@ namespace SellerService.DAO
         {
             return await _sellerRepository.GetSellerListingByIdAsync(id);
         }
-        public async Task<SellerListingResponseDTO?> CreateSellerListingAsync(SellerListingResponseDTO sellerListing)
+        public async Task<SellerListingResponseDTO?> CreateSellerListingAsync(SellerListingResponseDTO sellerListing, ProductResponseDTO product)
         {
-            return await _sellerRepository.CreateSellerListingAsync(sellerListing);
+            sellerListing.ProductId = product.Id;
+
+            return await _sellerRepository.CreateSellerListingAsync(sellerListing, product);
         }
+
         public async Task<SellerListingResponseDTO?> UpdateSellerListingAsync(string id, SellerListingResponseDTO sellerListing)
         {
             return await _sellerRepository.UpdateSellerListingAsync(id, sellerListing);

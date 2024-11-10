@@ -13,6 +13,7 @@ const OrderDetail = () => {
         orderDate: '',
         shippingAddress: '',
         totalAmount: 0,
+        orderStatus: '',
     });
     const [orderItems, setOrderItems] = useState([]);
     const [status, setStatus] = useState('');
@@ -52,9 +53,11 @@ const OrderDetail = () => {
         let updatedOrder = { ...orderDetails };
 
         if (status === 'Shipping') {
-            updatedOrder.totalAmount = null;
+            updatedOrder.orderStatus = 'Shipping';
         } else if (status === 'Delivered') {
-            updatedOrder.shippingAddress = null;
+            updatedOrder.orderStatus = 'Delivered';
+        } else if (status === 'Pending') {
+            updatedOrder.orderStatus = 'Pending';
         }
 
         axios.put(`http://localhost:5133/api/OrderManagement/orders/${orderId}`, updatedOrder)
