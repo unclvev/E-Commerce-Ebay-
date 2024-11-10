@@ -190,6 +190,14 @@ namespace ProductService.Controllers
                         .Select(store => store.Name)
                         .Distinct()
                         .ToList()
+                    /*
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    OriginalPrice = p.OriginalPrice,
+                    ImageUrl = p.ProductImages.FirstOrDefault().ImageUrl
+                    */
                 })
                 .Where(c => c.products.Count > 0) 
                 .ToListAsync();
@@ -231,6 +239,34 @@ namespace ProductService.Controllers
             }
 
             return Ok(productsByCategory.products);
+        }
+
+        [HttpGet("products/{pid}")]
+        public async Task<IActionResult> GetProductsById(string pid)
+        {
+            var productsById = await _context.Products
+                .Where(c => c.Id == pid)
+                .Include(c => c.Listings)
+                .ThenInclude(l => l.Product)
+                .Select(c => new CategoryDTO
+                {
+                    CategoryName = c.Name,
+                    products = c.Listings.Select(l => new ProductDTO
+                    {
+                        Name = l.Product.Name,
+                        Description = l.Product.Description,
+                        Price = l.Product.Price,
+                        OriginalPrice = l.Product.OriginalPrice,
+                        ImageUrl = l.Product.ProductImages.FirstOrDefault().ImageUrl
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+
+            if (productsById == null)
+            {
+                return NotFound("Category not found.");
+            }
+
+            return Ok(productsById.products);
         }
     }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
+import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import Carousel from '../../pages/Home/Includes/Carousel';
 import TrendingCategories from '../../pages/Home/Includes/TrendingCategories';
@@ -8,7 +9,6 @@ const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Định nghĩa dữ liệu slides cho carousel
   const slides = [
     {
       image: 'https://i.ebayimg.com/images/g/SDAAAOSwMw5mxy8h/s-l960.webp',
@@ -29,6 +29,7 @@ const HomePage = () => {
       buttonText: 'Shop now',
     },
   ];
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -50,17 +51,17 @@ const HomePage = () => {
 
   return (
     <MainLayout>
-
       <div className="mb-8">
-        <Carousel slides={slides} /> {/* Truyền dữ liệu slides vào Carousel */}
+        <Carousel slides={slides} />
       </div>
 
       <div className="mb-8">
         <TrendingCategories />
       </div>
+      
       <div className="grid grid-cols-4 gap-8">
         {products.map((product, index) => (
-          <div key={index} className="product-card">
+          <Link to={`/product/${product.Id}`} key={index} className="product-card">
             <img
               src={product.ImageUrl}
               alt={product.Name}
@@ -74,7 +75,7 @@ const HomePage = () => {
                 <span className="line-through text-gray-400">${product.OriginalPrice}</span>
               )}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </MainLayout>
@@ -82,4 +83,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-

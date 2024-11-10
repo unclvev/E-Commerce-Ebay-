@@ -1,7 +1,7 @@
-import { Button, Col, Row, Statistic, Table, message } from 'antd';
+import { Col, Row, Statistic, Table, message } from 'antd';
 import axios from 'axios'; // Import axios để gọi API
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import SellerNavbar from './layout/SellerNavbar';
 
 const SellerDashboard = () => {
     const [productCount, setProductCount] = useState(0);  // Số lượng sản phẩm
@@ -47,7 +47,7 @@ const SellerDashboard = () => {
     return (
         <div className="p-4">
             {/* Thanh điều hướng cho seller */}
-            <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
+            {/* <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
                     <Link to="/seller/product">
@@ -60,7 +60,8 @@ const SellerDashboard = () => {
                         <Button>Promotions</Button>
                     </Link>
                 </div>
-            </div>
+            </div> */}
+            <SellerNavbar />
 
             {/* Thống kê */}
             <Row gutter={16}>
