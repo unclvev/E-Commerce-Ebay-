@@ -64,7 +64,7 @@ namespace ProductService.Controllers
                 }).ToListAsync();
             return Ok(categoriesWithProducts);
         }
-<<<<<<< HEAD
+
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetProductsByCategoryId(
             string categoryId,
@@ -131,12 +131,9 @@ namespace ProductService.Controllers
             return Ok(categoryWithProducts);
         }
 
-        [HttpGet("search/{keyword?}")]
-        public async Task<IActionResult> SearchProducts(string? keyword)
-=======
         [HttpGet("search")]
         public async Task<IActionResult> SearchProducts(string? keyword, string? category)
->>>>>>> main
+
         {
             var productsQuery = _context.Products.AsQueryable();
 
