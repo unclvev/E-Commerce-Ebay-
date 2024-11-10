@@ -2,6 +2,7 @@ import { Button, Form, Input, message, Select, Table } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import SellerNavbar from './layout/SellerNavbar';
 
 const OrderDetail = () => {
     const { orderId } = useParams();
@@ -90,6 +91,7 @@ const OrderDetail = () => {
 
     return (
         <div className="p-6 max-w-3xl mx-auto bg-white shadow-md rounded-lg">
+            <SellerNavbar />
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Order Details</h2>
 
             <Table
