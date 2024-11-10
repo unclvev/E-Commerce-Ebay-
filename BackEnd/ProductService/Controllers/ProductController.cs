@@ -35,6 +35,7 @@ namespace ProductService.Controllers
                     CategoryName = c.Name,
                     products = c.Listings.Select(l => new ProductDTO
                     {
+                        Id = l.Product.Id,
                         Name = l.Product.Name,
                         Description = l.Product.Description,
                         Price = l.Product.Price,
@@ -154,6 +155,7 @@ namespace ProductService.Controllers
                         )
                         .Select(l => new ProductDTO
                         {
+                            Id = l.Product.Id,
                             Name = l.Product.Name,
                             Description = l.Product.Description,
                             Price = l.Product.Price,
