@@ -58,26 +58,6 @@ const HomePage = () => {
       <div className="mb-8">
         <TrendingCategories />
       </div>
-      
-      <div className="grid grid-cols-4 gap-8">
-        {products.map((product, index) => (
-          <Link to={`/product/${product.Id}`} key={index} className="product-card">
-            <img
-              src={product.ImageUrl}
-              alt={product.Name}
-              className="w-full h-48 object-cover"
-            />
-            <h3 className="text-xl font-semibold mt-2">{product.Name}</h3>
-            <p className="text-gray-500">{product.Description}</p>
-            <div className="flex justify-between items-center mt-4">
-              <span className="text-lg font-bold">${product.Price}</span>
-              {product.OriginalPrice && (
-                <span className="line-through text-gray-400">${product.OriginalPrice}</span>
-              )}
-            </div>
-          </Link>
-        ))}
-      </div>
     </>
   );
 };
