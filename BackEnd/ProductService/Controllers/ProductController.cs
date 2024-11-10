@@ -133,43 +133,83 @@ namespace ProductService.Controllers
 
         [HttpGet("search")]
         public async Task<IActionResult> SearchProducts(string? keyword, string? category)
-
         {
-            var productsQuery = _context.Products.AsQueryable();
-
-            // Filter by category if specified
-            if (!string.IsNullOrEmpty(category))
-            {
-                productsQuery = productsQuery
-                    .Where(p => p.Listings.Any(l => l.Category.Name == category));
-            }
-
-            // Filter by keyword if specified
-            if (!string.IsNullOrEmpty(keyword))
-            {
-                productsQuery = productsQuery.Where(p => p.Name.Contains(keyword) || p.Description.Contains(keyword));
-            }
-
-            // Select necessary fields for the frontend
-            var products = await productsQuery
-                .Select(p => new ProductDTO
+            var categoryWithProducts = await _context.Categories
+                .Include(c => c.Listings)
+                    .ThenInclude(l => l.Product)
+                        .ThenInclude(p => p.Colors)
+                .Include(c => c.Listings)
+                    .ThenInclude(l => l.Product)
+                        .ThenInclude(p => p.Sizes)
+                .Include(c => c.Listings)
+                    .ThenInclude(l => l.Product)
+                        .ThenInclude(p => p.Stores)
+                .Where(c => string.IsNullOrEmpty(category) || c.Name == category) // Thêm điều kiện lọc theo category
+                .Select(c => new CategoryDTO
                 {
+                    CategoryName = c.Name,
+                    products = c.Listings
+                        .Where(l =>
+                            (string.IsNullOrEmpty(keyword) || l.Product.Name.Contains(keyword) || l.Product.Description.Contains(keyword))  // Lọc theo keyword trong name hoặc description
+                        )
+                        .Select(l => new ProductDTO
+                        {
+                            Name = l.Product.Name,
+                            Description = l.Product.Description,
+                            Price = l.Product.Price,
+                            OriginalPrice = l.Product.OriginalPrice,
+                            ImageUrl = l.Product.ProductImages.FirstOrDefault().ImageUrl,
+                            colors = l.Product.Colors.Select(color => new ColorDTO
+                            {
+                                ColorName = color.Name
+                            }).ToList(),
+                            sizes = l.Product.Sizes.Select(size => new SizeDTO
+                            {
+                                SizeName = size.Name
+                            }).ToList(),
+                            stores = l.Product.Stores.Select(store => new StoreDTO
+                            {
+                                StoreName = store.Name
+                            }).ToList()
+                        }).ToList(),
+                    availableSizes = c.Listings
+                        .Where(l => string.IsNullOrEmpty(keyword) || l.Product.Name.Contains(keyword) || l.Product.Description.Contains(keyword)) // Lọc lại theo keyword
+                        .SelectMany(l => l.Product.Sizes)
+                        .Select(size => size.Name)
+                        .Distinct()
+                        .ToList(),
+                    availableColors = c.Listings
+                        .Where(l => string.IsNullOrEmpty(keyword) || l.Product.Name.Contains(keyword) || l.Product.Description.Contains(keyword)) // Lọc lại theo keyword
+                        .SelectMany(l => l.Product.Colors)
+                        .Select(color => color.Name)
+                        .Distinct()
+                        .ToList(),
+                    availableStores = c.Listings
+                        .Where(l => string.IsNullOrEmpty(keyword) || l.Product.Name.Contains(keyword) || l.Product.Description.Contains(keyword)) // Lọc lại theo keyword
+                        .SelectMany(l => l.Product.Stores)
+                        .Select(store => store.Name)
+                        .Distinct()
+                        .ToList()
+                    /*
                     Id = p.Id,
                     Name = p.Name,
                     Description = p.Description,
                     Price = p.Price,
                     OriginalPrice = p.OriginalPrice,
                     ImageUrl = p.ProductImages.FirstOrDefault().ImageUrl
+                    */
                 })
+                .Where(c => c.products.Count > 0) 
                 .ToListAsync();
 
-            if (products.Count == 0)
+            if (categoryWithProducts.Count == 0)
             {
                 return NotFound("No products found.");
             }
 
-            return Ok(products);
+            return Ok(categoryWithProducts);
         }
+
 
 
 

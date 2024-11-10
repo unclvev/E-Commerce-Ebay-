@@ -12,13 +12,15 @@ const ProductListPage = () => {
   const [categories, setCategories] = useState([]);
   const [currentCategoryProducts, setCurrentCategoryProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [priceRange, setPriceRange] = useState([100000, 500000]);
+  const [priceRange, setPriceRange] = useState([100000, 50000000]);
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState([]);
   const [selectedColor, setSelectedColor] = useState([]);
+  const [selectedStore, setSelectedStore] = useState([]);
   const [availableSizes, setAvailableSizes] = useState([]);
   const [availableColors, setAvailableColors] = useState([]);
+  const [availableStores, setAvailableStores] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const { categoryId: categoryParam } = useParams();
   const pageSize = 9;
@@ -27,6 +29,7 @@ const ProductListPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const category = searchParams.get('category');
   const keyword = searchParams.get('keyword');
+
   useEffect(() => {
     if (categoryParam) {
       setCategoryId(categoryParam);
@@ -36,32 +39,18 @@ const ProductListPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Cứng categoryId = 2
-        const response = await axios.get('http://localhost:5003/api/Product/category/2');
-        console.log("API Response:", response.data); 
-        setAvailableSizes(response.data.availableSizes);
-        setAvailableColors(response.data.availableColors);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    
-    fetchData();
-  }, []); 
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      setError(null);
-      setCurrentCategoryProducts([]);
-  
-      try {
         const response = await axios.get('http://localhost:5003/api/product/search', {
-          params: { category: category || '', keyword: keyword || '' }
+          params: { category: category || '', keyword: keyword || '' },
         });
-  
-        if (response.data && response.data.length > 0) {
-          setCurrentCategoryProducts(response.data);
+        const data = response.data;
+
+        if (data && data.length > 0) {
+          setCategories(data);
+          const products = data.flatMap((category) => category.products);
+          setCurrentCategoryProducts(products);
+          setAvailableSizes(data.flatMap((cat) => cat.availableSizes).filter(Boolean));
+          setAvailableColors(data.flatMap((cat) => cat.availableColors).filter(Boolean));
+          setAvailableStores(data.flatMap((cat) => cat.availableStores).filter(Boolean));
         } else {
           setError('No products found for this search.');
           setCurrentCategoryProducts([]);
@@ -69,15 +58,50 @@ const ProductListPage = () => {
       } catch (error) {
         console.error('Error fetching products:', error);
         setError('Failed to fetch products. Please try again later.');
-        setCurrentCategoryProducts([]);
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchProducts();
+
+    fetchData();
   }, [category, keyword]);
+
+  // Hàm lọc sản phẩm theo size, color, store và price range
+  const filterProducts = (products) => {
+    return products.filter((product) => {
+      // Kiểm tra size nếu có size được chọn
+      const sizeMatch =
+        selectedSize.length === 0 || product.sizes.some((size) => selectedSize.includes(size.sizeName));
+
+      // Kiểm tra color nếu có color được chọn
+      const colorMatch =
+        selectedColor.length === 0 || product.colors.some((color) => selectedColor.includes(color.colorName));
+
+      // Kiểm tra store nếu có store được chọn
+      const storeMatch =
+        selectedStore.length === 0 || product.stores.some((store) => selectedStore.includes(store.storeName));
+
+      // Kiểm tra khoảng giá
+      const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
+
+      // Chỉ trả về sản phẩm nếu tất cả điều kiện đều thỏa mãn
+      return sizeMatch && colorMatch && storeMatch && priceMatch;
+    });
+  };
+
+  // Áp dụng bộ lọc
+  const filteredProducts = filterProducts(currentCategoryProducts);
+
+  // Phân trang sau khi đã lọc sản phẩm
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   const formatMoney = (amount) => {
+    if (amount === undefined || amount === null) {
+      return '0 đ'; // Giá trị mặc định
+    }
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
@@ -88,15 +112,6 @@ const ProductListPage = () => {
     return 0;
   };
 
-  const paginatedProducts = currentCategoryProducts.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   const handleSizeChange = (checkedValues) => {
     setSelectedSize(checkedValues);
   };
@@ -104,6 +119,15 @@ const ProductListPage = () => {
   const handleColorChange = (checkedValues) => {
     setSelectedColor(checkedValues);
   };
+
+  const handleStoreChange = (checkedValues) => {
+    setSelectedStore(checkedValues);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <MainLayout>
       <div className="container mx-auto py-10">
@@ -124,12 +148,13 @@ const ProductListPage = () => {
               </div>
 
               <div className="mb-4">
-
                 <h3 className="text-md font-semibold">Size</h3>
-                <Checkbox.Group>
+                <Checkbox.Group onChange={handleSizeChange}>
                   {availableSizes.length > 0 ? (
                     availableSizes.map((size) => (
-                      <Checkbox key={size} value={size}>{size}</Checkbox>
+                      <Checkbox key={size} value={size}>
+                        {size}
+                      </Checkbox>
                     ))
                   ) : (
                     <p>No sizes available</p>
@@ -139,20 +164,36 @@ const ProductListPage = () => {
 
               <div className="mb-4">
                 <h3 className="text-md font-semibold">Color</h3>
-                <Checkbox.Group>
+                <Checkbox.Group onChange={handleColorChange}>
                   {availableColors.length > 0 ? (
                     availableColors.map((color) => (
-                      <Checkbox key={color} value={color}>{color}</Checkbox>
+                      <Checkbox key={color} value={color}>
+                        {color}
+                      </Checkbox>
                     ))
                   ) : (
                     <p>No colors available</p>
                   )}
-
                 </Checkbox.Group>
               </div>
 
+              <div className="mb-4">
+                <h3 className="text-md font-semibold">Store</h3>
+                <Checkbox.Group onChange={handleStoreChange}>
+                  {availableStores.length > 0 ? (
+                    availableStores.map((store) => (
+                      <Checkbox key={store} value={store}>
+                        {store}
+                      </Checkbox>
+                    ))
+                  ) : (
+                    <p>No stores available</p>
+                  )}
+                </Checkbox.Group>
+              </div>
             </div>
           </Col>
+
           <Col xs={24} sm={18} md={18} lg={18}>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <Row gutter={[16, 16]}>
@@ -196,7 +237,7 @@ const ProductListPage = () => {
             <Pagination
               current={currentPage}
               pageSize={pageSize}
-              total={currentCategoryProducts.length}
+              total={filteredProducts.length}
               onChange={(page) => setCurrentPage(page)}
               className="mt-4"
             />
