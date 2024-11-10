@@ -6,6 +6,7 @@
         public virtual ICollection<ProductDTO> products { get; set; }
         public virtual ICollection<string> availableSizes { get; set; } 
         public virtual ICollection<string> availableColors { get; set; }
+        public virtual ICollection<string> availableStores { get; set; }
 
     }
     public class ProductDTO
