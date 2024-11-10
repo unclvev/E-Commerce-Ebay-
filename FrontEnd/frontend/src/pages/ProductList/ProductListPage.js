@@ -15,12 +15,37 @@ const ProductListPage = () => {
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState([]);
   const [selectedColor, setSelectedColor] = useState([]);
+  const [availableSizes, setAvailableSizes] = useState([]);
+  const [availableColors, setAvailableColors] = useState([]);
+  const [categoryId, setCategoryId] = useState(null);
+  const { categoryId: categoryParam } = useParams();
   const pageSize = 9;
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const category = searchParams.get('category');
   const keyword = searchParams.get('keyword');
+  useEffect(() => {
+    if (categoryParam) {
+      setCategoryId(categoryParam);
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Cứng categoryId = 2
+        const response = await axios.get('http://localhost:5003/api/Product/category/2');
+        console.log("API Response:", response.data); 
+        setAvailableSizes(response.data.availableSizes);
+        setAvailableColors(response.data.availableColors);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []); 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,7 +75,6 @@ const ProductListPage = () => {
   
     fetchProducts();
   }, [category, keyword]);
-
   const formatMoney = (amount) => {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
@@ -78,7 +102,6 @@ const ProductListPage = () => {
   const handleColorChange = (checkedValues) => {
     setSelectedColor(checkedValues);
   };
-
   return (
     <MainLayout>
       <div className="container mx-auto py-10">
@@ -99,27 +122,35 @@ const ProductListPage = () => {
               </div>
 
               <div className="mb-4">
-                <h3 className="text-md font-semibold">Sizes</h3>
-                <Checkbox.Group onChange={handleSizeChange} className="flex flex-col">
-                  <Checkbox value="S">S</Checkbox>
-                  <Checkbox value="M">M</Checkbox>
-                  <Checkbox value="L">L</Checkbox>
-                  <Checkbox value="XL">XL</Checkbox>
+
+                <h3 className="text-md font-semibold">Size</h3>
+                <Checkbox.Group>
+                  {availableSizes.length > 0 ? (
+                    availableSizes.map((size) => (
+                      <Checkbox key={size} value={size}>{size}</Checkbox>
+                    ))
+                  ) : (
+                    <p>No sizes available</p>
+                  )}
                 </Checkbox.Group>
               </div>
 
               <div className="mb-4">
-                <h3 className="text-md font-semibold">Colors</h3>
-                <Checkbox.Group onChange={handleColorChange} className="flex flex-col">
-                  <Checkbox value="Red">Red</Checkbox>
-                  <Checkbox value="Blue">Blue</Checkbox>
-                  <Checkbox value="Green">Green</Checkbox>
-                  <Checkbox value="Black">Black</Checkbox>
+                <h3 className="text-md font-semibold">Color</h3>
+                <Checkbox.Group>
+                  {availableColors.length > 0 ? (
+                    availableColors.map((color) => (
+                      <Checkbox key={color} value={color}>{color}</Checkbox>
+                    ))
+                  ) : (
+                    <p>No colors available</p>
+                  )}
+
                 </Checkbox.Group>
               </div>
+
             </div>
           </Col>
-
           <Col xs={24} sm={18} md={18} lg={18}>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <Row gutter={[16, 16]}>

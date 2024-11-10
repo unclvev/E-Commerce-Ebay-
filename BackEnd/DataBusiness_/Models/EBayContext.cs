@@ -71,7 +71,8 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Listing)
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.ListingId)
-                    .HasConstraintName("FK__Bid__ListingId__44FF419A");
+                    .HasConstraintName("FK__Bid__ListingId__6A30C649");
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Bids)
                     .HasForeignKey(d => d.UserId)
@@ -102,7 +103,8 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Category)
                     .WithMany()
                     .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK__CategoryL__Categ__6383C8BA");
+                    .HasConstraintName("FK__CategoryL__Categ__08B54D69");
+
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
@@ -191,7 +193,8 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Bid)
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
-                    .HasConstraintName("FK__ListingBi__BidId__48CFD27E");
+                    .HasConstraintName("FK__ListingBi__BidId__6E01572D");
+
                 entity.HasOne(d => d.Listing)
                     .WithMany()
                     .HasForeignKey(d => d.ListingId)
@@ -244,7 +247,8 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__OrderItem__Order__3D5E1FD2");
+                    .HasConstraintName("FK__OrderItem__Order__628FA481");
+
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.ProductId)
@@ -268,7 +272,6 @@ namespace DataBusiness_.Models
                 entity.Property(e => e.SaleEndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.SaleStartDate).HasColumnType("datetime");
-
                 entity.HasMany(d => d.Colors)
                     .WithMany(p => p.Products)
                     .UsingEntity<Dictionary<string, object>>(
@@ -278,14 +281,10 @@ namespace DataBusiness_.Models
                         j =>
                         {
                             j.HasKey("ProductId", "ColorId").HasName("PK__ProductC__7CD6B0B9CDD76B64");
-
                             j.ToTable("ProductColor");
-
                             j.IndexerProperty<string>("ProductId").HasMaxLength(50);
-
                             j.IndexerProperty<string>("ColorId").HasMaxLength(50);
                         });
-
                 entity.HasMany(d => d.Sizes)
                     .WithMany(p => p.Products)
                     .UsingEntity<Dictionary<string, object>>(
@@ -295,14 +294,10 @@ namespace DataBusiness_.Models
                         j =>
                         {
                             j.HasKey("ProductId", "SizeId").HasName("PK__ProductS__0C37165A54A9E987");
-
                             j.ToTable("ProductSize");
-
                             j.IndexerProperty<string>("ProductId").HasMaxLength(50);
-
                             j.IndexerProperty<string>("SizeId").HasMaxLength(50);
                         });
-
                 entity.HasMany(d => d.Stores)
                     .WithMany(p => p.Products)
                     .UsingEntity<Dictionary<string, object>>(
@@ -312,13 +307,11 @@ namespace DataBusiness_.Models
                         j =>
                         {
                             j.HasKey("ProductId", "StoreId").HasName("PK__ProductS__B7B4E9DD5820BCAD");
-
                             j.ToTable("ProductStore");
-
                             j.IndexerProperty<string>("ProductId").HasMaxLength(50);
-
                             j.IndexerProperty<string>("StoreId").HasMaxLength(50);
                         });
+                
             });
 
             modelBuilder.Entity<ProductImage>(entity =>
@@ -524,7 +517,8 @@ namespace DataBusiness_.Models
                 entity.HasOne(d => d.Bid)
                     .WithMany()
                     .HasForeignKey(d => d.BidId)
-                    .HasConstraintName("FK__UserBid__BidId__5441852A");
+                    .HasConstraintName("FK__UserBid__BidId__797309D9");
+
                 entity.HasOne(d => d.User)
                     .WithMany()
                     .HasForeignKey(d => d.UserId)
