@@ -272,6 +272,46 @@ namespace DataBusiness_.Models
                 entity.Property(e => e.SaleEndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.SaleStartDate).HasColumnType("datetime");
+                entity.HasMany(d => d.Colors)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductColor",
+                        l => l.HasOne<Color>().WithMany().HasForeignKey("ColorId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductCo__Color__72C60C4A"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductCo__Produ__71D1E811"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "ColorId").HasName("PK__ProductC__7CD6B0B9CDD76B64");
+                            j.ToTable("ProductColor");
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+                            j.IndexerProperty<string>("ColorId").HasMaxLength(50);
+                        });
+                entity.HasMany(d => d.Sizes)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductSize",
+                        l => l.HasOne<Size>().WithMany().HasForeignKey("SizeId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSi__SizeI__6EF57B66"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSi__Produ__6E01572D"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "SizeId").HasName("PK__ProductS__0C37165A54A9E987");
+                            j.ToTable("ProductSize");
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+                            j.IndexerProperty<string>("SizeId").HasMaxLength(50);
+                        });
+                entity.HasMany(d => d.Stores)
+                    .WithMany(p => p.Products)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "ProductStore",
+                        l => l.HasOne<Store>().WithMany().HasForeignKey("StoreId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSt__Store__6B24EA82"),
+                        r => r.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__ProductSt__Produ__6A30C649"),
+                        j =>
+                        {
+                            j.HasKey("ProductId", "StoreId").HasName("PK__ProductS__B7B4E9DD5820BCAD");
+                            j.ToTable("ProductStore");
+                            j.IndexerProperty<string>("ProductId").HasMaxLength(50);
+                            j.IndexerProperty<string>("StoreId").HasMaxLength(50);
+                        });
+                
             });
 
             modelBuilder.Entity<ProductImage>(entity =>
