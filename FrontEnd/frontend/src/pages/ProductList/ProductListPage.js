@@ -1,21 +1,30 @@
-// src/pages/ProductList/ProductListPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Row, Col, Card, Checkbox, Slider, Pagination } from 'antd';
-import axios from 'axios'; // Import axios
+import { useLocation } from 'react-router-dom';
+import { Row, Col, Card, Slider, Pagination, Checkbox } from 'antd';
 import MainLayout from '../../layouts/MainLayout';
+import axios from 'axios';
 
 const { Meta } = Card;
 
 const ProductListPage = () => {
+  const [categories, setCategories] = useState([]);
+  const [currentCategoryProducts, setCurrentCategoryProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [priceRange, setPriceRange] = useState([100000, 500000]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState(null);
+  const [selectedSize, setSelectedSize] = useState([]);
+  const [selectedColor, setSelectedColor] = useState([]);
   const [availableSizes, setAvailableSizes] = useState([]);
   const [availableColors, setAvailableColors] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const { categoryId: categoryParam } = useParams();
   const pageSize = 9;
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const category = searchParams.get('category');
+  const keyword = searchParams.get('keyword');
   useEffect(() => {
     if (categoryParam) {
       setCategoryId(categoryParam);
@@ -37,49 +46,62 @@ const ProductListPage = () => {
     
     fetchData();
   }, []); 
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      setCurrentCategoryProducts([]);
   
-
-  const products = [
-    {
-      id: 1,
-      name: 'A Fierce Dragon Fantasy Art Mens Cotton T-Shirt',
-      price: 359370,
-      originalPrice: 500000,
-      image: 'https://www.tatgolf.vn/media/catalog/product/cache/4b8a26fd3678cf71135a0bf838b897de/l/e/lecoq_qgwtja16_wwh.jpg',
-    },
-    {
-      id: 2,
-      name: 'Disappointments All of You Jesus Faith T-Shirt',
-      price: 416633,
-      originalPrice: 600000,
-      image: 'https://www.tatgolf.vn/media/catalog/product/cache/4b8a26fd3678cf71135a0bf838b897de/a/_/a_o_ngan_tay_lecoq_qgmvja03v_nv02_.jpg',
-    },
-    {
-      id: 3,
-      name: 'Mens T-Shirts Plain Cotton Short Sleeve',
-      price: 112814,
-      originalPrice: 200000,
-      image: 'https://www.tatgolf.vn/media/catalog/product/cache/4b8a26fd3678cf71135a0bf838b897de/a/_/a_o_ngan_tay_lecoq_qgmvja03v_nv02_.jpg',
-    },
-    {
-      id: 4,
-      name: 'Torn Philippines Flag T-Shirt',
-      price: 261271,
-      originalPrice: 400000,
-      image: 'https://www.tatgolf.vn/media/catalog/product/cache/4b8a26fd3678cf71135a0bf838b897de/a/_/a_o_ngan_tay_lecoq_qgmvja03v_nv02_.jpg',
-    },
-  ];
-
+      try {
+        const response = await axios.get('http://localhost:5003/api/product/search', {
+          params: { category: category || '', keyword: keyword || '' }
+        });
+  
+        if (response.data && response.data.length > 0) {
+          setCurrentCategoryProducts(response.data);
+        } else {
+          setError('No products found for this search.');
+          setCurrentCategoryProducts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setError('Failed to fetch products. Please try again later.');
+        setCurrentCategoryProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchProducts();
+  }, [category, keyword]);
   const formatMoney = (amount) => {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
   const calculateDiscountPercentage = (price, originalPrice) => {
-    return Math.round(((originalPrice - price) / originalPrice) * 100);
+    if (originalPrice > 0) {
+      return Math.round(((originalPrice - price) / originalPrice) * 100);
+    }
+    return 0;
   };
 
-  const paginatedProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedProducts = currentCategoryProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const handleSizeChange = (checkedValues) => {
+    setSelectedSize(checkedValues);
+  };
+
+  const handleColorChange = (checkedValues) => {
+    setSelectedColor(checkedValues);
+  };
   return (
     <MainLayout>
       <div className="container mx-auto py-10">
@@ -100,6 +122,7 @@ const ProductListPage = () => {
               </div>
 
               <div className="mb-4">
+
                 <h3 className="text-md font-semibold">Size</h3>
                 <Checkbox.Group>
                   {availableSizes.length > 0 ? (
@@ -122,47 +145,54 @@ const ProductListPage = () => {
                   ) : (
                     <p>No colors available</p>
                   )}
+
                 </Checkbox.Group>
               </div>
 
             </div>
           </Col>
-
           <Col xs={24} sm={18} md={18} lg={18}>
+            {error && <div style={{ color: 'red' }}>{error}</div>}
             <Row gutter={[16, 16]}>
-              {paginatedProducts.map((product) => (
-                <Col xs={24} sm={12} md={8} key={product.id}>
-                  <Card
-                    hoverable
-                    cover={<img alt={product.name} src={product.image} />}
-                  >
-                    <Meta
-                      title={product.name}
-                      description={
-                        <>
-                          <div>
-                            <span style={{ color: 'red', fontWeight: 'bold' }}>
-                              {formatMoney(product.price)}
-                            </span>
-                            &nbsp;
-                            <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
-                              {formatMoney(product.originalPrice)}
-                            </span>
-                          </div>
-                          <div style={{ color: 'green' }}>
-                            Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
-                          </div>
-                        </>
-                      }
-                    />
-                  </Card>
-                </Col>
-              ))}
+              {paginatedProducts.length > 0 ? (
+                paginatedProducts.map((product, index) => (
+                  <Col xs={24} sm={12} md={8} key={index}>
+                    <Card
+                      hoverable
+                      cover={<img alt={product.name} src={product.imageUrl} />}
+                    >
+                      <Meta
+                        title={product.name}
+                        description={
+                          <>
+                            <div>
+                              <span style={{ color: 'red', fontWeight: 'bold' }}>
+                                {formatMoney(product.price)}
+                              </span>
+                              &nbsp;
+                              <span style={{ textDecoration: 'line-through', marginLeft: '8px' }}>
+                                {formatMoney(product.originalPrice)}
+                              </span>
+                            </div>
+                            <p>{product.description}</p>
+                            <p style={{ color: 'green', fontWeight: 'bold' }}>
+                              Discount: {calculateDiscountPercentage(product.price, product.originalPrice)}%
+                            </p>
+                          </>
+                        }
+                      />
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                !error && <Col span={24}>No products found in this category</Col>
+              )}
             </Row>
+
             <Pagination
               current={currentPage}
               pageSize={pageSize}
-              total={products.length}
+              total={currentCategoryProducts.length}
               onChange={(page) => setCurrentPage(page)}
               className="mt-4"
             />

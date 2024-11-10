@@ -64,6 +64,7 @@ namespace ProductService.Controllers
                 }).ToListAsync();
             return Ok(categoriesWithProducts);
         }
+<<<<<<< HEAD
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetProductsByCategoryId(
             string categoryId,
@@ -132,14 +133,27 @@ namespace ProductService.Controllers
 
         [HttpGet("search/{keyword?}")]
         public async Task<IActionResult> SearchProducts(string? keyword)
+=======
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts(string? keyword, string? category)
+>>>>>>> main
         {
             var productsQuery = _context.Products.AsQueryable();
 
+            // Filter by category if specified
+            if (!string.IsNullOrEmpty(category))
+            {
+                productsQuery = productsQuery
+                    .Where(p => p.Listings.Any(l => l.Category.Name == category));
+            }
+
+            // Filter by keyword if specified
             if (!string.IsNullOrEmpty(keyword))
             {
                 productsQuery = productsQuery.Where(p => p.Name.Contains(keyword) || p.Description.Contains(keyword));
             }
 
+            // Select necessary fields for the frontend
             var products = await productsQuery
                 .Select(p => new ProductDTO
                 {
@@ -159,5 +173,34 @@ namespace ProductService.Controllers
             return Ok(products);
         }
 
+
+
+        [HttpGet("category/{categoryName}")]
+        public async Task<IActionResult> GetProductsByCategory(string categoryName)
+        {
+            var productsByCategory = await _context.Categories
+                .Where(c => c.Name == categoryName)
+                .Include(c => c.Listings)
+                .ThenInclude(l => l.Product)
+                .Select(c => new CategoryDTO
+                {
+                    CategoryName = c.Name,
+                    products = c.Listings.Select(l => new ProductDTO
+                    {
+                        Name = l.Product.Name,
+                        Description = l.Product.Description,
+                        Price = l.Product.Price,
+                        OriginalPrice = l.Product.OriginalPrice,
+                        ImageUrl = l.Product.ProductImages.FirstOrDefault().ImageUrl
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+
+            if (productsByCategory == null)
+            {
+                return NotFound("Category not found.");
+            }
+
+            return Ok(productsByCategory.products);
+        }
     }
 }

@@ -13,6 +13,7 @@ const OrderDetail = () => {
         orderDate: '',
         shippingAddress: '',
         totalAmount: 0,
+        orderStatus: '',
     });
     const [orderItems, setOrderItems] = useState([]);
     const [status, setStatus] = useState('');
@@ -52,9 +53,11 @@ const OrderDetail = () => {
         let updatedOrder = { ...orderDetails };
 
         if (status === 'Shipping') {
-            updatedOrder.totalAmount = null;
+            updatedOrder.orderStatus = 'Shipping';
         } else if (status === 'Delivered') {
-            updatedOrder.shippingAddress = null;
+            updatedOrder.orderStatus = 'Delivered';
+        } else if (status === 'Pending') {
+            updatedOrder.orderStatus = 'Pending';
         }
 
         axios.put(`http://localhost:5133/api/OrderManagement/orders/${orderId}`, updatedOrder)
@@ -68,9 +71,9 @@ const OrderDetail = () => {
     };
 
     const handleRevertOrder = () => {
-        axios.put(`http://localhost:5133/api/OrderManagement/revertorders/${orderId}`, orderDetails)
+        axios.put(`http://localhost:5133/api/OrderManagement/calculateorders/${orderId}`, orderDetails)
             .then(() => {
-                message.success('Order reverted successfully');
+                message.success('Order calculated successfully');
                 // Gọi lại fetchOrderData để cập nhật lại dữ liệu sau khi revert
                 fetchOrderData();
             })
@@ -145,7 +148,7 @@ const OrderDetail = () => {
                         onClick={handleRevertOrder}
                         className="bg-gray-300 border-gray-300 text-gray-700"
                     >
-                        Revert
+                        Calculate
                     </Button>
                     <Link to="/seller/order">
                         <Button type="default" className="bg-gray-300 border-gray-300 text-gray-700">

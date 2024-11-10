@@ -1,65 +1,7 @@
-import { Button, Card, Input, Select } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom'; // Import Link từ react-router-dom
-
-const { Option } = Select;
-
-const BusinessForm = ({ formData, handleInputChange, handleInputBlur, handleSelectBlur, errors, touched }) => (
-  <>
-    <div>
-      <Input
-        type="text"
-        name="businessName"
-        placeholder="Business name"
-        value={formData.businessName}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        required
-      />
-      {touched.businessName && errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
-    </div>
-    <div>
-      <Input
-        type="email"
-        name="businessEmail"
-        placeholder="Business email"
-        value={formData.businessEmail}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        required
-      />
-      {touched.businessEmail && errors.businessEmail && <p className="text-red-500 text-xs mt-1">{errors.businessEmail}</p>}
-    </div>
-    <div>
-      <Input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        required
-      />
-      {touched.password && errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-    </div>
-    <div>
-      <Select
-        placeholder="Where is your business registered?"
-        onChange={(value) => handleInputChange({ target: { name: 'businessLocation', value } })}
-        value={formData.businessLocation}
-        style={{ width: '100%' }}
-        onBlur={handleSelectBlur}
-      >
-        <Option value="us">United States</Option>
-        <Option value="uk">United Kingdom</Option>
-        <Option value="ca">Canada</Option>
-        {/* Thêm các quốc gia khác ở đây */}
-      </Select>
-      {touched.businessLocation && errors.businessLocation && <p className="text-red-500 text-xs mt-1">{errors.businessLocation}</p>}
-    </div>
-  </>
-);
+import { Button, Card, Input, Modal, message } from 'antd';
+import axios from 'axios'; // Đảm bảo đã cài axios để gửi yêu cầu HTTP
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, touched }) => (
   <>
@@ -74,6 +16,40 @@ const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, to
         required
       />
       {touched.userName && errors.userName && <p className="text-red-500 text-xs mt-1">{errors.userName}</p>}
+    </div>
+    <div>
+      <Input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        required
+      />
+      {touched.email && errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+    </div>
+    <div>
+      <Input
+        type="text"
+        name="address"
+        placeholder="Address"
+        value={formData.address}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+      />
+      {touched.address && errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+    </div>
+    <div>
+      <Input
+        type="text"
+        name="phoneNumber"
+        placeholder="Phone Number"
+        value={formData.phoneNumber}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+      />
+      {touched.phoneNumber && errors.phoneNumber && <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>}
     </div>
     <div>
       <Input
@@ -99,23 +75,26 @@ const PersonalForm = ({ formData, handleInputChange, handleInputBlur, errors, to
       />
       {touched.rePassword && errors.rePassword && <p className="text-red-500 text-xs mt-1">{errors.rePassword}</p>}
     </div>
-
   </>
 );
 
 const RegistrationForm = () => {
-  const [formType, setFormType] = useState('personal'); // Hiển thị form Personal đầu tiên
+  const [formType, setFormType] = useState('personal');
   const [formData, setFormData] = useState({
-    businessName: '',
-    businessEmail: '',
-    password: '',
-    businessLocation: '',
     userName: '',
+    email: '',
+    address: '',
+    phoneNumber: '',
+    password: '',
     rePassword: ''
   });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isOtpModalVisible, setIsOtpModalVisible] = useState(false);  // Hiển thị modal nhập OTP
+  const [otp, setOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');  // OTP từ server
+  const navigate = useNavigate(); // Hook để điều hướng trang mới
 
   useEffect(() => {
     validateForm();
@@ -123,17 +102,11 @@ const RegistrationForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (formType === 'business') {
-      if (!formData.businessName) newErrors.businessName = 'Business name is required';
-      if (!formData.businessEmail) newErrors.businessEmail = 'Business email is required';
-      if (!formData.password) newErrors.password = 'Password is required';
-      if (!formData.businessLocation) newErrors.businessLocation = 'Business location is required';
-    } else {
-      if (!formData.userName) newErrors.userName = 'Username is required';
-      if (!formData.password) newErrors.password = 'Password is required';
-      if (!formData.rePassword) newErrors.rePassword = 'Re-enter Password is required';
-      if (formData.password !== formData.rePassword) newErrors.rePassword = 'Passwords do not match';
-    }
+    if (!formData.userName) newErrors.userName = 'Username is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.rePassword) newErrors.rePassword = 'Re-enter Password is required';
+    if (formData.password !== formData.rePassword) newErrors.rePassword = 'Passwords do not match';
     setErrors(newErrors);
     setIsFormValid(Object.keys(newErrors).length === 0);
   };
@@ -147,34 +120,51 @@ const RegistrationForm = () => {
   };
 
   const handleInputBlur = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
     setTouched(prev => ({ ...prev, [name]: true }));
     validateForm();
   };
 
-  const handleSelectBlur = () => {
-    setTouched(prev => ({ ...prev, businessLocation: true }));
-    handleInputBlur({ target: { name: 'businessLocation', value: formData.businessLocation } });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      console.log('Form submitted:', formData);
-      // Xử lý gửi dữ liệu đăng ký ở đây
+      try {
+        // Gửi yêu cầu đăng ký tới backend để nhận OTP
+        const response = await axios.post('http://localhost:5095/api/Register', formData, { withCredentials: true });
+        
+        setGeneratedOtp(response.data.otp); // Lưu OTP nhận được từ server
+        setIsOtpModalVisible(true);  // Mở modal nhập OTP
+        
+      } catch (error) {
+        console.error('Error registering user:', error);
+        message.error('Failed to register user');
+      }
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    try {
+      // Gửi OTP người dùng nhập vào để kiểm tra
+      const response = await axios.post('http://localhost:5095/api/Otp/check-otp', { otp }, { withCredentials: true });
+      if (response.status === 200) {
+        message.success('OTP verified successfully');
+        
+        // Chuyển hướng sang trang khác sau khi OTP hợp lệ
+        navigate('/sign-in'); // Đổi '/welcome' thành đường dẫn trang bạn muốn chuyển đến
+        
+      }
+    } catch (error) {
+      message.error('Invalid OTP');
     }
   };
 
   return (
     <div className="relative h-screen flex">
-      {/* Logo Section */}
       <div className="absolute top-4 left-4">
         <Link to="/">
           <img width="120" src="/images/logo.svg" alt="Logo" />
         </Link>
       </div>
-
-      {/* Image Section */}
       <div
         className="flex-1 bg-cover bg-center bg-no-repeat border-r-4 border-gray-300 flex items-center justify-center"
         style={{
@@ -188,45 +178,17 @@ const RegistrationForm = () => {
           margin: 'auto'
         }}
       >
-        {/* Nội dung khác (nếu cần) */}
       </div>
-
-      {/* Form Login Section */}
       <div className="flex-1 flex items-center justify-center bg-gray-100">
         <Card title="Create an account" className="w-full max-w-md">
-          <div className="flex space-x-2 mt-2">
-            <Button
-              type={formType === 'personal' ? 'primary' : 'default'}
-              onClick={() => setFormType('personal')}
-            >
-              Personal
-            </Button>
-            <Button
-              type={formType === 'business' ? 'primary' : 'default'}
-              onClick={() => setFormType('business')}
-            >
-              Business
-            </Button>
-          </div>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            {formType === 'business' ? (
-              <BusinessForm
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleInputBlur={handleInputBlur}
-                handleSelectBlur={handleSelectBlur}
-                errors={errors}
-                touched={touched}
-              />
-            ) : (
-              <PersonalForm
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleInputBlur={handleInputBlur}
-                errors={errors}
-                touched={touched}
-              />
-            )}
+            <PersonalForm
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleInputBlur={handleInputBlur}
+              errors={errors}
+              touched={touched}
+            />
             <div className="text-gray-500 text-xs mt-4">
               By signing up, you agree to our <a href="/" className="text-black">User Agreement</a> and acknowledge reading our <a href="/" className="text-black">User Privacy Notice</a>.
             </div>
@@ -238,38 +200,24 @@ const RegistrationForm = () => {
             >
               Create account
             </Button>
-            {formType === 'personal' && (
-              <div className="text-center my-4">
-                <div className="flex items-center justify-center">
-                  <div className="flex-grow border-t border-gray-300" />
-                  <span className="mx-4 text-gray-500">or</span>
-                  <div className="flex-grow border-t border-gray-300" />
-                </div>
-                <div className="flex flex-col items-center space-y-4 mt-4">
-                  <div className="flex space-x-4 w-full">
-                    <Button
-                      className="flex-1"
-                      type="default"
-                      style={{ borderColor: '#ed1f0c', color: '#ed1f0c' }}
-                      icon={<GoogleOutlined />} // Sử dụng biểu tượng Ant Design
-                    >
-                      Google
-                    </Button>
-                    <Button
-                      className="flex-1"
-                      type="default"
-                      style={{ borderColor: '#4285F4', color: '#4285F4' }}
-                      icon={<FacebookOutlined />} // Sử dụng biểu tượng Ant Design
-                    >
-                      Facebook
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
           </form>
         </Card>
       </div>
+
+      {/* Modal nhập OTP */}
+      <Modal
+        title="Enter OTP"
+        visible={isOtpModalVisible}
+        onCancel={() => setIsOtpModalVisible(false)}
+        onOk={handleOtpSubmit}
+      >
+        <Input
+          type="text"
+          placeholder="Enter OTP"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 };

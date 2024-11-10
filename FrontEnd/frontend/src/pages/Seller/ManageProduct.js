@@ -1,52 +1,57 @@
 import { Button, Popconfirm, Space, Table, message } from 'antd';
-import axios from 'axios'; // Import axios để gọi API
-import dayjs from 'dayjs'; // Import dayjs để định dạng thời gian
+import axios from 'axios';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import AddListingModal from './include/AddListingModal'; // Import modal thêm listing
+import EditListingModal from './include/EditListingModal'; // Import modal chỉnh sửa listing
 
 const ManageProducts = () => {
-    const [dataSource, setDataSource] = useState([]);  // Khai báo state để lưu trữ dữ liệu sản phẩm
-    const [loading, setLoading] = useState(true);  // Khai báo state để xử lý trạng thái tải dữ liệu
+    const [dataSource, setDataSource] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);  // Chế độ chỉnh sửa
+    const [currentListing, setCurrentListing] = useState(null);  // Dữ liệu chi tiết của listing
 
-    // Lấy dữ liệu sản phẩm từ API
+    // Lấy danh sách sản phẩm từ API
     useEffect(() => {
-        axios.get('http://localhost:5133/api/ProductManagement/listings')
-            .then((response) => {
-                console.log('Product data:', response.data);
-                // Chuyển dữ liệu thành định dạng phù hợp cho bảng
-                const products = response.data.map(item => ({
-                    key: item.productId,  // Sử dụng productId làm key cho từng dòng
-                    name: `Product ${item.productId}`,  // Giả sử tên sản phẩm là "Product + productId"
-                    price: `$${item.currentPrice.toFixed(2)}`,  // Định dạng giá sản phẩm
-                    stock: item.startPrice === item.currentPrice ? 'In Stock' : 'Out of Stock',  // Kiểm tra tình trạng tồn kho
-                    startTime: dayjs(item.startTime).format('YYYY-MM-DD HH:mm:ss'),  // Định dạng startTime
-                    endTime: dayjs(item.endTime).format('YYYY-MM-DD HH:mm:ss'),  // Định dạng endTime
-                }));
-                setDataSource(products);  // Lưu dữ liệu vào state
-                setLoading(false);  // Dừng trạng thái tải
-            })
-            .catch((error) => {
-                message.error('Error loading products');
-                setLoading(false);  // Dừng trạng thái tải khi có lỗi
-            });
-    }, []);  // useEffect chỉ chạy 1 lần khi component được render
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('http://localhost:5133/api/ProductManagement/listings');
+            const listings = response.data.map(item => ({
+                key: item.id,  // Sử dụng listingId làm key
+                name: `Product ${item.productId}`,
+                price: `$${item.currentPrice.toFixed(2)}`,
+                stock: item.startPrice === item.currentPrice ? 'In Stock' : 'Out of Stock',
+                startTime: dayjs(item.startTime).format('YYYY-MM-DD HH:mm:ss'),
+                endTime: dayjs(item.endTime).format('YYYY-MM-DD HH:mm:ss'),
+            }));
+            setDataSource(listings);
+        } catch (error) {
+            message.error('Error loading products');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const columns = [
         { title: 'Product Name', dataIndex: 'name', key: 'name' },
         { title: 'Price', dataIndex: 'price', key: 'price' },
         { title: 'Stock', dataIndex: 'stock', key: 'stock' },
-        { title: 'Start Time', dataIndex: 'startTime', key: 'startTime' },  // Cột startTime
-        { title: 'End Time', dataIndex: 'endTime', key: 'endTime' },  // Cột endTime
+        { title: 'Start Time', dataIndex: 'startTime', key: 'startTime' },
+        { title: 'End Time', dataIndex: 'endTime', key: 'endTime' },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Link to={`/seller/edit-product/${record.key}`}>
-                        <Button>Edit</Button>
-                    </Link>
+                    <Button onClick={() => handleEdit(record.key)}>Edit</Button>
                     <Popconfirm
-                        title="Are you sure to delete this product?"
+                        title="Are you sure to delete this listing?"
                         onConfirm={() => handleDelete(record.key)}
                         okText="Yes"
                         cancelText="No"
@@ -58,42 +63,76 @@ const ManageProducts = () => {
         },
     ];
 
-    const handleDelete = (key) => {
-        setDataSource(dataSource.filter((item) => item.key !== key));
-        message.success('Product deleted successfully');
+    const handleDelete = async (listingId) => {
+        try {
+            await axios.delete(`http://localhost:5133/api/ProductManagement/listings/${listingId}`);
+            setDataSource(dataSource.filter(item => item.key !== listingId));
+            message.success('Listing deleted successfully');
+        } catch (error) {
+            message.error('Failed to delete listing');
+        }
+    };
+
+    const handleEdit = async (listingId) => {
+        setIsEditMode(true);
+        setLoading(true);
+        try {
+            const response = await axios.get(`http://localhost:5133/api/ProductManagement/listing/${listingId}`);
+            setCurrentListing(response.data);
+            setIsModalVisible(true);
+        } catch (error) {
+            message.error('Failed to load listing details');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const showAddListingModal = () => {
+        setIsEditMode(false);
+        setCurrentListing(null);
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsModalVisible(false);
+        fetchProducts();
     };
 
     return (
         <div className="p-4">
-            {/* Thanh điều hướng trang */}
             <div className="flex justify-between items-center mb-6 bg-gray-100 p-4 rounded-lg shadow">
                 <div className="text-xl font-semibold">Seller Dashboard</div>
                 <div className="space-x-4">
-                    <Link to="/seller/order">
-                        <Button type="default">Manage Orders</Button>
-                    </Link>
-                    <Link to="/seller/dashboard">
-                        <Button type="default">Dashboard</Button>
-                    </Link>
-                    <Link to="/seller/Promotion">
-                        <Button>Promotions </Button>
-                    </Link>
+                    <Link to="/seller/order"><Button type="default">Manage Orders</Button></Link>
+                    <Link to="/seller/dashboard"><Button type="default">Dashboard</Button></Link>
+                    <Link to="/seller/Promotion"><Button>Promotions</Button></Link>
                 </div>
             </div>
 
-            {/* Bảng sản phẩm */}
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">Product List</h2>
-                <Link to="/seller/add-product">
-                    <Button type="primary">Add New Product</Button>
-                </Link>
+                <Button type="primary" onClick={showAddListingModal}>Add New Product</Button>
             </div>
 
             <Table
-                dataSource={dataSource}  // Dữ liệu từ API
+                dataSource={dataSource}
                 columns={columns}
-                loading={loading}  // Hiển thị spinner khi đang tải dữ liệu
-                rowKey="key"   // Dùng productId làm khóa cho từng dòng
+                loading={loading}
+                rowKey="key"
+            />
+
+            {/* Modal để thêm hoặc chỉnh sửa sản phẩm */}
+            <AddListingModal
+                visible={isModalVisible && !isEditMode}
+                onClose={closeModal}
+                isEditMode={false}
+                onSave={fetchProducts}
+            />
+            <EditListingModal
+                visible={isModalVisible && isEditMode}
+                onClose={closeModal}
+                listing={currentListing}
+                onUpdate={fetchProducts}
             />
         </div>
     );
