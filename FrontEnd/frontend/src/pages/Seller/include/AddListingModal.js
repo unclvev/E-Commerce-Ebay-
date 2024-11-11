@@ -2,7 +2,7 @@ import { Button, DatePicker, Form, Input, InputNumber, Modal } from 'antd';
 import axios from 'axios';
 import React from 'react';
 
-const AddListingModal = ({ visible, onClose }) => {
+const AddListingModal = ({ visible, onClose, userId }) => {
     const [form] = Form.useForm();
 
     const handleAddListing = async (values) => {
@@ -10,7 +10,7 @@ const AddListingModal = ({ visible, onClose }) => {
             sellerListing: {
                 id: "", // Hoặc một giá trị cụ thể nếu cần
                 productId: "", // Bạn có thể để trống hoặc tự động tạo nếu cần thiết
-                sellerId: values.sellerId,
+                sellerId: userId,
                 startTime: values.startTime.toISOString(),
                 endTime: values.endTime.toISOString(),
                 startPrice: values.startPrice,
@@ -48,10 +48,10 @@ const AddListingModal = ({ visible, onClose }) => {
             onCancel={onClose}
             footer={null}
         >
-            <Form form={form} layout="vertical" onFinish={handleAddListing}>
+            <Form form={form} layout="vertical" onFinish={handleAddListing} initialValues={{ sellerId: userId }}>
                 <h3>Listing Information</h3>
                 <Form.Item label="Seller ID" name="sellerId" rules={[{ required: true }]}>
-                    <Input />
+                    <Input value={userId} disabled="true" ></Input>
                 </Form.Item>
                 <Form.Item label="Start Time" name="startTime" rules={[{ required: true }]}>
                     <DatePicker showTime />

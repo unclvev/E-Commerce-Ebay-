@@ -48,9 +48,9 @@ namespace SellerService.DAO
         {
             return await _sellerRepository.DeleteSellerListingAsync(id);
         }
-        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerEmailAsync(string sellerEmail)
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerEmail)
         {
-            return await _sellerRepository.GetListingsBySellerEmailAsync(sellerEmail);
+            return await _sellerRepository.GetListingsBySellerIdAsync(sellerEmail);
         }
         public async Task<SellerListingResponseDTO> GetListingByProductIdAsync(string productId)
         {

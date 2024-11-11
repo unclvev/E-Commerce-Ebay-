@@ -213,12 +213,8 @@ namespace SellerService.Repository
             return deletedListingDTO;
         }
         //get by seller email
-        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerEmailAsync(string sellerEmail)
+        public async Task<List<SellerListingResponseDTO>> GetListingsBySellerIdAsync(string sellerId)
         {
-            var sellerId = await _context.Users
-                .Where(s => s.Email == sellerEmail)
-                .Select(s => s.Id)
-                .FirstOrDefaultAsync();
             return await _context.Listings
                 .Where(l => l.SellerId == sellerId)
                 .Select(l => new SellerListingResponseDTO

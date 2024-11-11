@@ -88,13 +88,13 @@ namespace SellerService.Controllers
         }
         //Get Listings by Seller email
         [HttpGet("listings/{sellerId}")]
-        public async Task<IActionResult> GetListingsBySellerId(string sellerEmail)
+        public async Task<IActionResult> GetListingsBySellerId(string sellerId)
         {
-            var listings = await _sellerDAO.GetListingsBySellerEmailAsync(sellerEmail);
+            var listings = await _sellerDAO.GetListingsBySellerIdAsync(sellerId);
 
             if (listings == null || !listings.Any())
             {
-                return NotFound($"No listings found for seller with email: {sellerEmail}");
+                return NotFound($"No listings found for seller with email: {sellerId}");
             }
 
             return Ok(listings);
